@@ -358,7 +358,7 @@ export const SoundsSection: React.FC = () => {
     return initial;
   });
 
-  const [playbackSource, setPlaybackSource] = useState<'youtube' | 'webaudio'>('youtube');
+  const [playbackSource, setPlaybackSource] = useState<'direct' | 'webaudio'>('direct');
   const [masterVolume, setMasterVolume] = useState<number>(85);
   const [isMasterMuted, setIsMasterMuted] = useState<boolean>(false);
 
@@ -370,26 +370,19 @@ export const SoundsSection: React.FC = () => {
     return initial;
   });
 
-  // Keep references to all YouTube iframes to control their volume via postMessage
-  const iframeRefs = useRef<Record<string, HTMLIFrameElement | null>>({});
+  // Keep references to ad-free HTML5 Audio elements for each track
+  const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({});
 
-  // Safe helper to send postMessage commands to a specific YouTube iframe
-  const sendYouTubeCommand = useCallback((id: string, func: string, args: unknown[] = []) => {
-    const iframe = iframeRefs.current[id];
-    if (iframe && iframe.contentWindow) {
-      try {
-        iframe.contentWindow.postMessage(
-          JSON.stringify({
-            event: 'command',
-            func,
-            args,
-          }),
-          '*'
-        );
-      } catch {
-        // ignore cross-origin timing issues
-      }
+  // Get or lazily create the ad-free HTML5 Audio instance for a track
+  const getOrCreateAudio = useCallback((id: string): HTMLAudioElement => {
+    let audio = audioRefs.current[id];
+    if (!audio) {
+      audio = new Audio(`./audio/${id}.mp3`);
+      audio.loop = true;
+      audio.preload = 'auto';
+      audioRefs.current[id] = audio;
     }
+    return audio;
   }, []);
 
   // Compute effective volume for a track considering master volume and mute
@@ -407,7 +400,7 @@ export const SoundsSection: React.FC = () => {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  // Position offsets in seconds (for skipping silent intros on every sound)
+  // Position offsets in seconds
   const [trackPositions, setTrackPositions] = useState<Record<string, number>>(() => {
     const initial: Record<string, number> = {};
     SOUND_TRACKS.forEach((t) => {
@@ -419,18 +412,20 @@ export const SoundsSection: React.FC = () => {
   // Jump to specific timestamp in track
   const handleSeek = (id: string, seconds: number) => {
     setTrackPositions((prev) => ({ ...prev, [id]: seconds }));
-    if (!activeTracks[id]) {
-      setActiveTracks((prev) => {
-        const willPlay = true;
-        const eff = getEffectiveVolume(id);
-        if (playbackSource === 'webaudio') {
-          playContinuousSound(id, eff / 100);
-        }
-        return { ...prev, [id]: willPlay };
-      });
+    const eff = getEffectiveVolume(id);
+
+    if (playbackSource === 'direct') {
+      const audio = getOrCreateAudio(id);
+      audio.volume = Math.min(1, Math.max(0, eff / 100));
+      if (audio.duration && Number.isFinite(audio.duration)) {
+        audio.currentTime = seconds % audio.duration;
+      }
+      audio.play().catch(() => {});
+    } else {
+      playContinuousSound(id, eff / 100);
     }
-    sendYouTubeCommand(id, 'seekTo', [seconds, true]);
-    sendYouTubeCommand(id, 'playVideo');
+
+    setActiveTracks((prev) => ({ ...prev, [id]: true }));
   };
 
   // Jump relative delta seconds forward
@@ -444,39 +439,13 @@ export const SoundsSection: React.FC = () => {
   useEffect(() => {
     return () => {
       stopAllContinuousSounds();
+      Object.values(audioRefs.current).forEach((a) => {
+        if (a) {
+          a.pause();
+        }
+      });
     };
   }, []);
-
-  // Handle track iframe ready / loaded
-  const handleIframeLoaded = (id: string) => {
-    const eff = getEffectiveVolume(id);
-    const track = SOUND_TRACKS.find((t) => t.id === id);
-    const startSec = trackPositions[id] ?? (track?.startTime ?? 0);
-
-    sendYouTubeCommand(id, 'unMute');
-    sendYouTubeCommand(id, 'setVolume', [eff]);
-    if (startSec > 0) {
-      sendYouTubeCommand(id, 'seekTo', [startSec, true]);
-    }
-    sendYouTubeCommand(id, 'playVideo');
-
-    // Backup triggers after short delay to ensure YouTube internal JS player is initialized
-    setTimeout(() => {
-      sendYouTubeCommand(id, 'unMute');
-      sendYouTubeCommand(id, 'setVolume', [eff]);
-      if (startSec > 0) {
-        sendYouTubeCommand(id, 'seekTo', [startSec, true]);
-      }
-      sendYouTubeCommand(id, 'playVideo');
-    }, 400);
-
-    setTimeout(() => {
-      sendYouTubeCommand(id, 'setVolume', [eff]);
-      if (startSec > 0) {
-        sendYouTubeCommand(id, 'seekTo', [startSec, true]);
-      }
-    }, 900);
-  };
 
   // Toggle single sound track (does NOT stop other sounds - enables combining!)
   const handleToggleTrack = (id: string) => {
@@ -491,8 +460,12 @@ export const SoundsSection: React.FC = () => {
           stopContinuousSound(id);
         }
       } else {
-        if (!willPlay) {
-          sendYouTubeCommand(id, 'pauseVideo');
+        const audio = getOrCreateAudio(id);
+        audio.volume = Math.min(1, Math.max(0, eff / 100));
+        if (willPlay) {
+          audio.play().catch(() => {});
+        } else {
+          audio.pause();
         }
       }
 
@@ -505,8 +478,11 @@ export const SoundsSection: React.FC = () => {
     setVolumes((prev) => ({ ...prev, [id]: newTrackVol }));
     const eff = getEffectiveVolume(id, newTrackVol);
 
-    if (playbackSource === 'youtube') {
-      sendYouTubeCommand(id, 'setVolume', [eff]);
+    if (playbackSource === 'direct') {
+      const audio = audioRefs.current[id];
+      if (audio) {
+        audio.volume = Math.min(1, Math.max(0, eff / 100));
+      }
     } else if (activeTracks[id]) {
       setContinuousSoundVolume(id, eff / 100);
     }
@@ -522,8 +498,11 @@ export const SoundsSection: React.FC = () => {
     SOUND_TRACKS.forEach((track) => {
       if (activeTracks[track.id]) {
         const eff = Math.round(((volumes[track.id] ?? 60) * newMaster) / 100);
-        if (playbackSource === 'youtube') {
-          sendYouTubeCommand(track.id, 'setVolume', [eff]);
+        if (playbackSource === 'direct') {
+          const audio = audioRefs.current[track.id];
+          if (audio) {
+            audio.volume = Math.min(1, Math.max(0, eff / 100));
+          }
         } else {
           setContinuousSoundVolume(track.id, eff / 100);
         }
@@ -539,12 +518,10 @@ export const SoundsSection: React.FC = () => {
     SOUND_TRACKS.forEach((track) => {
       if (activeTracks[track.id]) {
         const eff = nextMuted ? 0 : Math.round(((volumes[track.id] ?? 60) * masterVolume) / 100);
-        if (playbackSource === 'youtube') {
-          if (nextMuted) {
-            sendYouTubeCommand(track.id, 'mute');
-          } else {
-            sendYouTubeCommand(track.id, 'unMute');
-            sendYouTubeCommand(track.id, 'setVolume', [eff]);
+        if (playbackSource === 'direct') {
+          const audio = audioRefs.current[track.id];
+          if (audio) {
+            audio.volume = Math.min(1, Math.max(0, eff / 100));
           }
         } else {
           setContinuousSoundVolume(track.id, eff / 100);
@@ -556,8 +533,10 @@ export const SoundsSection: React.FC = () => {
   // Stop all sounds
   const handleStopAll = () => {
     stopAllContinuousSounds();
-    SOUND_TRACKS.forEach((track) => {
-      sendYouTubeCommand(track.id, 'pauseVideo');
+    Object.values(audioRefs.current).forEach((audio) => {
+      if (audio) {
+        audio.pause();
+      }
     });
     const resetActive: Record<string, boolean> = {};
     SOUND_TRACKS.forEach((t) => {
@@ -566,8 +545,8 @@ export const SoundsSection: React.FC = () => {
     setActiveTracks(resetActive);
   };
 
-  // Switch between YouTube recordings and offline Web Audio generator
-  const switchPlaybackSource = (src: 'youtube' | 'webaudio') => {
+  // Switch between ad-free recordings and offline Web Audio generator
+  const switchPlaybackSource = (src: 'direct' | 'webaudio') => {
     handleStopAll();
     setPlaybackSource(src);
   };
@@ -593,12 +572,16 @@ export const SoundsSection: React.FC = () => {
     setActiveTracks(newActive);
 
     // 3. Start audio in chosen mode
-    if (playbackSource === 'webaudio') {
-      Object.entries(preset.tracks).forEach(([id, vol]) => {
-        const eff = Math.round((vol * masterVolume) / 100);
+    Object.entries(preset.tracks).forEach(([id, vol]) => {
+      const eff = isMasterMuted ? 0 : Math.round((vol * masterVolume) / 100);
+      if (playbackSource === 'direct') {
+        const audio = getOrCreateAudio(id);
+        audio.volume = Math.min(1, Math.max(0, eff / 100));
+        audio.play().catch(() => {});
+      } else {
         playContinuousSound(id, eff / 100);
-      });
-    }
+      }
+    });
   };
 
   const activeTrackIds = Object.keys(activeTracks).filter((id) => activeTracks[id]);
@@ -625,14 +608,14 @@ export const SoundsSection: React.FC = () => {
           {/* Source Switcher */}
           <div className="inline-flex items-center gap-1.5 p-1 bg-white/70 border border-[#E2DAED] rounded-2xl shadow-2xs">
             <button
-              onClick={() => switchPlaybackSource('youtube')}
+              onClick={() => switchPlaybackSource('direct')}
               className={`px-3.5 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                playbackSource === 'youtube'
+                playbackSource === 'direct'
                   ? 'bg-[#E4D8F3] text-[#432A64] font-semibold shadow-xs'
                   : 'text-[#626A7A] hover:text-[#2D223F]'
               }`}
             >
-              Originální YouTube záznamy
+              Originální záznamy (100% bez reklam)
             </button>
             <button
               onClick={() => switchPlaybackSource('webaudio')}
@@ -642,7 +625,7 @@ export const SoundsSection: React.FC = () => {
                   : 'text-[#626A7A] hover:text-[#2D223F]'
               }`}
             >
-              Vestavěný offline generátor
+              Vestavěný offline syntetizátor
             </button>
           </div>
         </div>
@@ -776,15 +759,15 @@ export const SoundsSection: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {playbackSource === 'youtube' && (
+                      {playbackSource === 'direct' && (
                         <button
                           type="button"
-                          onClick={() => handleSeekForward(track.id, 30)}
+                          onClick={() => handleSeekForward(track.id, 15)}
                           className="px-1.5 py-1 rounded-lg text-[#554271] hover:bg-[#F0EAF7] border border-black/5 transition-colors cursor-pointer text-[10px] font-semibold flex items-center gap-0.5"
-                          title="Přeskočit o +30 sekund dopředu"
+                          title="Posunout záznam o +15 sekund dopředu"
                         >
                           <FastForward className="w-3 h-3 text-[#79629E]" />
-                          <span>+30s</span>
+                          <span>+15s</span>
                         </button>
                       )}
                       <input
@@ -958,32 +941,21 @@ export const SoundsSection: React.FC = () => {
 
                         <button
                           type="button"
-                          onClick={() => handleSeekForward(track.id, 30)}
+                          onClick={() => handleSeekForward(track.id, 15)}
                           className="px-2 py-1 rounded-lg text-[10px] font-semibold bg-white border border-[#DDD5EB] text-[#4A3B63] hover:bg-[#FAF8FD] transition-colors cursor-pointer flex items-center gap-1 ml-auto"
-                          title="Přeskočit o dalších 30 sekund dopředu"
+                          title="Posunout o 15 sekund dopředu"
                         >
                           <FastForward className="w-3 h-3 text-[#634E7D]" />
-                          <span>+30 s</span>
+                          <span>+15 s</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* YouTube Player Iframe (kept mounted while active to maintain continuous streaming) */}
-                    {isPlaying && playbackSource === 'youtube' && (
-                      <div className="mb-3 rounded-xl overflow-hidden border border-[#D5C6E6] bg-black/5 p-0.5">
-                        <iframe
-                          ref={(el) => {
-                            iframeRefs.current[track.id] = el;
-                          }}
-                          id={`yt-player-${track.id}`}
-                          onLoad={() => handleIframeLoaded(track.id)}
-                          width="100%"
-                          height="75"
-                          src={`https://www.youtube-nocookie.com/embed/${track.youtubeId}?autoplay=1&enablejsapi=1&version=3&loop=1&playlist=${track.youtubeId}&playsinline=1${(trackPositions[track.id] ?? (track.startTime ?? 0)) > 0 ? `&start=${trackPositions[track.id] ?? track.startTime}` : ''}`}
-                          title={track.name}
-                          allow="autoplay; encrypted-media"
-                          className="rounded-lg border-0 block"
-                        />
+                    {/* Ad-free status badge when active */}
+                    {isPlaying && playbackSource === 'direct' && (
+                      <div className="mb-3 px-3 py-1.5 rounded-xl border border-[#C6DEC9] bg-[#EAF6EC] text-[#225732] text-[11px] font-medium flex items-center justify-between">
+                        <span>✓ Hraje čistý záznam (bez reklam a čekání)</span>
+                        <span className="animate-pulse">●</span>
                       </div>
                     )}
                   </div>
