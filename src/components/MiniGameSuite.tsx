@@ -965,7 +965,7 @@ export const MiniGameSuite: React.FC = () => {
   };
 
   return (
-    <section id="minihra" className="py-20 bg-[#F2EFF7] border-t border-[#E5DEEE]">
+    <section id="minihra" className="py-20 bg-white/30 border-t border-black/5 transition-colors duration-500">
       <div className="max-w-5xl mx-auto px-6">
         {/* Heading */}
         <div className="text-center max-w-xl mx-auto mb-10">

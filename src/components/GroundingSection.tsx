@@ -250,7 +250,7 @@ export const GroundingSection: React.FC = () => {
   };
 
   return (
-    <section id="uzemneni" className="py-20 bg-[#F5F2F9] border-t border-[#EDE7F6]">
+    <section id="uzemneni" className="py-20 bg-white/40 border-t border-black/5 transition-colors duration-500">
       <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">

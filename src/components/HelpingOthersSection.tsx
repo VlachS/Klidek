@@ -29,7 +29,7 @@ export const HelpingOthersSection: React.FC<HelpingOthersProps> = ({ onNavigate 
   const [activeTab, setActiveTab] = useState<'principles' | 'phrases' | 'website-guide'>('principles');
 
   return (
-    <section id="pomoc-druhemu" className="py-20 bg-[#F4EFF8] border-t border-[#E5DEEE]">
+    <section id="pomoc-druhemu" className="py-20 bg-white/35 border-t border-black/5 transition-colors duration-500">
       <div className="max-w-5xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">

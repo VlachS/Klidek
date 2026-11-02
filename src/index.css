@@ -17,6 +17,136 @@
   }
 }
 
+/* =========================================================
+   FULL-PAGE THEME TRANSFORMATIONS (Šalvějová zelená & Chrpová modrá)
+   ========================================================= */
+
+/* --- MINT (ŠALVĚJOVÁ ZELENÁ) --- */
+[data-theme="mint"] header {
+  background-color: rgba(212, 238, 221, 0.92) !important;
+  border-color: #add3bc !important;
+}
+
+[data-theme="mint"] .bg-\[\#493563\],
+[data-theme="mint"] .bg-\[\#4B3469\],
+[data-theme="mint"] .bg-\[\#593E7A\] {
+  background-color: #275d42 !important;
+}
+
+[data-theme="mint"] .hover\:bg-\[\#3D2C53\]:hover,
+[data-theme="mint"] .hover\:bg-\[\#3C2755\]:hover {
+  background-color: #1e4933 !important;
+}
+
+[data-theme="mint"] .bg-\[\#E8DFF5\],
+[data-theme="mint"] .bg-\[\#E3D7F3\],
+[data-theme="mint"] .bg-\[\#E4D8F3\],
+[data-theme="mint"] .bg-\[\#EFE8F7\],
+[data-theme="mint"] .bg-\[\#EFE9F7\],
+[data-theme="mint"] .bg-\[\#E3D9F2\],
+[data-theme="mint"] .bg-\[\#EADFF7\] {
+  background-color: #cdebd8 !important;
+  color: #1e4d35 !important;
+  border-color: #a9d6b9 !important;
+}
+
+[data-theme="mint"] .bg-\[\#F7F2FB\],
+[data-theme="mint"] .bg-\[\#FAF6FC\],
+[data-theme="mint"] .bg-\[\#F7F2FA\] {
+  background-color: #eef9f2 !important;
+}
+
+[data-theme="mint"] .border-\[\#D5C6E8\],
+[data-theme="mint"] .border-\[\#DACCEE\],
+[data-theme="mint"] .border-\[\#DFD5EC\],
+[data-theme="mint"] .border-\[\#DCD3E9\],
+[data-theme="mint"] .border-\[\#E2DAED\],
+[data-theme="mint"] .border-\[\#E4DCF0\],
+[data-theme="mint"] .border-\[\#E4DEF0\],
+[data-theme="mint"] .border-\[\#E2DBEC\],
+[data-theme="mint"] .border-\[\#D8C7EB\] {
+  border-color: #b4dcc3 !important;
+}
+
+[data-theme="mint"] .text-\[\#43305D\],
+[data-theme="mint"] .text-\[\#2D223F\],
+[data-theme="mint"] .text-\[\#2E2342\],
+[data-theme="mint"] .text-\[\#2C1D42\],
+[data-theme="mint"] .text-\[\#2C1F3F\],
+[data-theme="mint"] .text-\[\#543878\],
+[data-theme="mint"] .text-\[\#553874\],
+[data-theme="mint"] .text-\[\#5F487D\] {
+  color: #1d4932 !important;
+}
+
+[data-theme="mint"] .accent-\[\#583E7A\],
+[data-theme="mint"] .accent-\[\#624587\] {
+  accent-color: #275d42 !important;
+}
+
+/* --- SKY (CHRPOVĚ MODRÁ) --- */
+[data-theme="sky"] header {
+  background-color: rgba(209, 231, 249, 0.92) !important;
+  border-color: #a7cce9 !important;
+}
+
+[data-theme="sky"] .bg-\[\#493563\],
+[data-theme="sky"] .bg-\[\#4B3469\],
+[data-theme="sky"] .bg-\[\#593E7A\] {
+  background-color: #24527a !important;
+}
+
+[data-theme="sky"] .hover\:bg-\[\#3D2C53\]:hover,
+[data-theme="sky"] .hover\:bg-\[\#3C2755\]:hover {
+  background-color: #1b3f5e !important;
+}
+
+[data-theme="sky"] .bg-\[\#E8DFF5\],
+[data-theme="sky"] .bg-\[\#E3D7F3\],
+[data-theme="sky"] .bg-\[\#E4D8F3\],
+[data-theme="sky"] .bg-\[\#EFE8F7\],
+[data-theme="sky"] .bg-\[\#EFE9F7\],
+[data-theme="sky"] .bg-\[\#E3D9F2\],
+[data-theme="sky"] .bg-\[\#EADFF7\] {
+  background-color: #cce3f8 !important;
+  color: #1c4468 !important;
+  border-color: #a4caec !important;
+}
+
+[data-theme="sky"] .bg-\[\#F7F2FB\],
+[data-theme="sky"] .bg-\[\#FAF6FC\],
+[data-theme="sky"] .bg-\[\#F7F2FA\] {
+  background-color: #edf5fc !important;
+}
+
+[data-theme="sky"] .border-\[\#D5C6E8\],
+[data-theme="sky"] .border-\[\#DACCEE\],
+[data-theme="sky"] .border-\[\#DFD5EC\],
+[data-theme="sky"] .border-\[\#DCD3E9\],
+[data-theme="sky"] .border-\[\#E2DAED\],
+[data-theme="sky"] .border-\[\#E4DCF0\],
+[data-theme="sky"] .border-\[\#E4DEF0\],
+[data-theme="sky"] .border-\[\#E2DBEC\],
+[data-theme="sky"] .border-\[\#D8C7EB\] {
+  border-color: #b0d2ef !important;
+}
+
+[data-theme="sky"] .text-\[\#43305D\],
+[data-theme="sky"] .text-\[\#2D223F\],
+[data-theme="sky"] .text-\[\#2E2342\],
+[data-theme="sky"] .text-\[\#2C1D42\],
+[data-theme="sky"] .text-\[\#2C1F3F\],
+[data-theme="sky"] .text-\[\#543878\],
+[data-theme="sky"] .text-\[\#553874\],
+[data-theme="sky"] .text-\[\#5F487D\] {
+  color: #1b4264 !important;
+}
+
+[data-theme="sky"] .accent-\[\#583E7A\],
+[data-theme="sky"] .accent-\[\#624587\] {
+  accent-color: #24527a !important;
+}
+
 /* Custom subtle animations for breathing and gentle floating */
 @keyframes float-slow {
   0%, 100% {

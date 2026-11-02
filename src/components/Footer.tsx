@@ -12,7 +12,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="py-12 bg-[#F6F4FA] border-t border-[#EAE3F3]">
+    <footer className="py-12 bg-white/45 border-t border-black/5 transition-colors duration-500">
       <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#7A8799]">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-[#43305D] text-sm font-display">Klídek</span>

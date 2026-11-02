@@ -189,7 +189,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#F2E5F5]',
     accentText: 'text-[#5E3867]',
     tag: 'Kočičí teplo',
-    defaultVolume: 70,
+    defaultVolume: 90,
     startTime: 10,
     cues: [
       { label: '0:10 (Začátek)', time: 10, tip: 'První hřejivé zavrnění' },
@@ -588,7 +588,7 @@ export const SoundsSection: React.FC = () => {
   const activeCount = activeTrackIds.length;
 
   return (
-    <section id="zvuky" className="py-20 bg-gradient-to-b from-[#FAF8FC] via-[#F4EFFB] to-[#F1F6F4] border-t border-[#EDE7F6]">
+    <section id="zvuky" className="py-20 bg-white/30 border-t border-black/5 transition-colors duration-500">
       <div className="max-w-5xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">

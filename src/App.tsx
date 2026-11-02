@@ -28,15 +28,18 @@ export default function App() {
     }
   };
 
-  // Richer pastel pigmentation with noticeable soft tint
+  // Richer pastel pigmentation across the entire page
   const themeClasses = {
-    lavender: 'from-[#E7DBF2] via-[#DFD1EE] to-[#D6E6DE]',
-    mint: 'from-[#D2EADA] via-[#C5E4CE] to-[#DAE5F0]',
-    sky: 'from-[#D0E5F7] via-[#C0DEF4] to-[#E0D7F0]',
+    lavender: 'from-[#E7DBF2] via-[#DFD1EE] to-[#E6DCF2]',
+    mint: 'from-[#CBEBD7] via-[#BCE2CA] to-[#CDEBD9]',
+    sky: 'from-[#C8E3F8] via-[#B8D9F5] to-[#CAE3F8]',
   }[themeTint];
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${themeClasses} transition-colors duration-700 font-sans text-[#2D3748]`}>
+    <div
+      data-theme={themeTint}
+      className={`min-h-screen bg-gradient-to-b ${themeClasses} transition-colors duration-700 font-sans text-[#2D3748]`}
+    >
       {/* Top Navbar */}
       <Navbar onNavigate={scrollToSection} activeSection={activeSection} />
 
