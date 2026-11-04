@@ -196,6 +196,95 @@ export function playAnchorGrounding() {
   });
 }
 
+// Continuous soothing singing bowl & grounding resonance while the anchor is held down
+let anchorHoldNodes: {
+  oscs: OscillatorNode[];
+  lfo: OscillatorNode;
+  masterGain: GainNode;
+  chimeInterval: number;
+} | null = null;
+
+export function startAnchorHoldSound() {
+  if (isMuted) return;
+  if (anchorHoldNodes) {
+    stopAnchorHoldSound();
+  }
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+  const masterGain = ctx.createGain();
+  masterGain.gain.setValueAtTime(0.0001, now);
+  masterGain.gain.exponentialRampToValueAtTime(0.065, now + 0.25);
+
+  // Subtle slow breathing LFO on the resonance
+  const vcaGain = ctx.createGain();
+  vcaGain.gain.setValueAtTime(0.82, now);
+
+  const lfo = ctx.createOscillator();
+  lfo.type = 'sine';
+  lfo.frequency.setValueAtTime(0.28, now); // ~3.5s calm wave
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.setValueAtTime(0.18, now);
+  lfo.connect(lfoGain);
+  lfoGain.connect(vcaGain.gain);
+
+  // Warm harmonic singing bowl frequencies (C3 + G3 + C4 + E4)
+  const freqs = [130.81, 196.0, 261.63, 329.63];
+  const relGains = [0.55, 0.25, 0.14, 0.06];
+  const oscs: OscillatorNode[] = [];
+
+  freqs.forEach((freq, idx) => {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+    g.gain.setValueAtTime(relGains[idx], now);
+
+    osc.connect(g);
+    g.connect(vcaGain);
+    osc.start(now);
+    oscs.push(osc);
+  });
+
+  vcaGain.connect(masterGain);
+  masterGain.connect(ctx.destination);
+  lfo.start(now);
+
+  // Play initial grounding bowl chime and repeat softly while held
+  playAnchorGrounding();
+  const chimeInterval = window.setInterval(() => {
+    if (!anchorHoldNodes || isMuted) return;
+    playAnchorGrounding();
+  }, 3200);
+
+  anchorHoldNodes = { oscs, lfo, masterGain, chimeInterval };
+}
+
+export function stopAnchorHoldSound() {
+  if (!anchorHoldNodes || !audioCtx) return;
+  const nodes = anchorHoldNodes;
+  anchorHoldNodes = null;
+  clearInterval(nodes.chimeInterval);
+  const now = audioCtx.currentTime;
+
+  try {
+    nodes.masterGain.gain.cancelScheduledValues(now);
+    nodes.masterGain.gain.setValueAtTime(Math.max(0.0001, nodes.masterGain.gain.value), now);
+    nodes.masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+    setTimeout(() => {
+      try {
+        nodes.oscs.forEach((o) => o.stop());
+        nodes.lfo.stop();
+      } catch {
+        // ignore
+      }
+    }, 450);
+  } catch {
+    // ignore
+  }
+}
+
 // Natural soothing water droplet ripple sound
 export function playWaterDropRipple() {
   if (isMuted) return;

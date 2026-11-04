@@ -5,7 +5,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Shield, Sparkles, Heart, RefreshCw } from 'lucide-react';
-import { playAnchorGrounding } from '../utils/soundEffects';
+import {
+  playAnchorGrounding,
+  startAnchorHoldSound,
+  stopAnchorHoldSound,
+} from '../utils/soundEffects';
 
 interface AnchorAffirmation {
   text: string;
@@ -64,6 +68,7 @@ export const MindfulAnchor: React.FC = () => {
     setHoldHint(null);
     completedRef.current = false;
     holdStartRef.current = performance.now();
+    startAnchorHoldSound();
 
     const updateHold = (now: number) => {
       if (!holdStartRef.current) return;
@@ -71,28 +76,20 @@ export const MindfulAnchor: React.FC = () => {
       const progress = Math.min(100, (elapsed / HOLD_DURATION_MS) * 100);
       setHoldProgress(progress);
 
-      if (progress >= 100) {
-        // Complete the grounding!
+      if (progress >= 100 && !completedRef.current) {
+        // Complete the grounding milestone while continuing to hold and emit sound!
         completedRef.current = true;
         setIsGrounded(true);
         setRippleActive(true);
         playAnchorGrounding();
         setGroundedCount((c) => c + 1);
-        setIsHolding(false);
         setHoldProgress(100);
-        setHoldHint('Kotva dosedla. Vnímej klid a pevnou oporu.');
+        setHoldHint('Kotva dosedla. Drž ji dál, jak dlouho potřebuješ – vnímej její klidný tón.');
 
         // Cycle to next affirmation for fresh reflection
         setTimeout(() => {
           setAffirmationIndex((prev) => (prev + 1) % AFFIRMATIONS.length);
         }, 800);
-
-        setTimeout(() => {
-          setRippleActive(false);
-          setHoldProgress(0);
-        }, 2200);
-
-        return;
       }
 
       animFrameRef.current = requestAnimationFrame(updateHold);
@@ -102,27 +99,30 @@ export const MindfulAnchor: React.FC = () => {
   };
 
   const handlePointerUpOrCancel = () => {
+    stopAnchorHoldSound();
+
     if (!completedRef.current && isHolding) {
       if (holdProgress < 85 && holdProgress > 5) {
         setHoldHint('Kotvu je potřeba podržet... Zkus stisknout a vydržet.');
       }
+    } else if (completedRef.current && isHolding) {
+      setHoldHint('Kotva tě ukotvila. Kdykoliv ji můžeš znovu podržet.');
     }
 
     setIsHolding(false);
+    setRippleActive(false);
     holdStartRef.current = null;
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;
     }
 
-    if (!completedRef.current) {
-      // Smoothly reset progress
-      setHoldProgress(0);
-    }
+    setHoldProgress(0);
   };
 
   useEffect(() => {
     return () => {
+      stopAnchorHoldSound();
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current);
       }
@@ -258,7 +258,11 @@ export const MindfulAnchor: React.FC = () => {
 
               {/* Status pill on the anchor */}
               <div className="absolute bottom-2 px-2.5 py-0.5 rounded-full bg-white/80 text-[10px] font-semibold text-[#573A78] shadow-2xs">
-                {isHolding ? `Drž dál... ${Math.round(holdProgress)}%` : 'Stiskni & drž'}
+                {isHolding
+                  ? holdProgress >= 100
+                    ? 'Zní tón klidu...'
+                    : `Drž dál... ${Math.round(holdProgress)}%`
+                  : 'Stiskni & drž'}
               </div>
             </button>
           </div>

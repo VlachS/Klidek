@@ -358,7 +358,6 @@ export const SoundsSection: React.FC = () => {
     return initial;
   });
 
-  const [playbackSource, setPlaybackSource] = useState<'direct' | 'webaudio'>('direct');
   const [masterVolume, setMasterVolume] = useState<number>(85);
   const [isMasterMuted, setIsMasterMuted] = useState<boolean>(false);
 
@@ -414,16 +413,12 @@ export const SoundsSection: React.FC = () => {
     setTrackPositions((prev) => ({ ...prev, [id]: seconds }));
     const eff = getEffectiveVolume(id);
 
-    if (playbackSource === 'direct') {
-      const audio = getOrCreateAudio(id);
-      audio.volume = Math.min(1, Math.max(0, eff / 100));
-      if (audio.duration && Number.isFinite(audio.duration)) {
-        audio.currentTime = seconds % audio.duration;
-      }
-      audio.play().catch(() => {});
-    } else {
-      playContinuousSound(id, eff / 100);
+    const audio = getOrCreateAudio(id);
+    audio.volume = Math.min(1, Math.max(0, eff / 100));
+    if (audio.duration && Number.isFinite(audio.duration)) {
+      audio.currentTime = seconds % audio.duration;
     }
+    audio.play().catch(() => {});
 
     setActiveTracks((prev) => ({ ...prev, [id]: true }));
   };
@@ -453,20 +448,12 @@ export const SoundsSection: React.FC = () => {
       const willPlay = !prev[id];
       const eff = getEffectiveVolume(id);
 
-      if (playbackSource === 'webaudio') {
-        if (willPlay) {
-          playContinuousSound(id, eff / 100);
-        } else {
-          stopContinuousSound(id);
-        }
+      const audio = getOrCreateAudio(id);
+      audio.volume = Math.min(1, Math.max(0, eff / 100));
+      if (willPlay) {
+        audio.play().catch(() => {});
       } else {
-        const audio = getOrCreateAudio(id);
-        audio.volume = Math.min(1, Math.max(0, eff / 100));
-        if (willPlay) {
-          audio.play().catch(() => {});
-        } else {
-          audio.pause();
-        }
+        audio.pause();
       }
 
       return { ...prev, [id]: willPlay };
@@ -478,13 +465,9 @@ export const SoundsSection: React.FC = () => {
     setVolumes((prev) => ({ ...prev, [id]: newTrackVol }));
     const eff = getEffectiveVolume(id, newTrackVol);
 
-    if (playbackSource === 'direct') {
-      const audio = audioRefs.current[id];
-      if (audio) {
-        audio.volume = Math.min(1, Math.max(0, eff / 100));
-      }
-    } else if (activeTracks[id]) {
-      setContinuousSoundVolume(id, eff / 100);
+    const audio = audioRefs.current[id];
+    if (audio) {
+      audio.volume = Math.min(1, Math.max(0, eff / 100));
     }
   };
 
@@ -498,13 +481,9 @@ export const SoundsSection: React.FC = () => {
     SOUND_TRACKS.forEach((track) => {
       if (activeTracks[track.id]) {
         const eff = Math.round(((volumes[track.id] ?? 60) * newMaster) / 100);
-        if (playbackSource === 'direct') {
-          const audio = audioRefs.current[track.id];
-          if (audio) {
-            audio.volume = Math.min(1, Math.max(0, eff / 100));
-          }
-        } else {
-          setContinuousSoundVolume(track.id, eff / 100);
+        const audio = audioRefs.current[track.id];
+        if (audio) {
+          audio.volume = Math.min(1, Math.max(0, eff / 100));
         }
       }
     });
@@ -518,13 +497,9 @@ export const SoundsSection: React.FC = () => {
     SOUND_TRACKS.forEach((track) => {
       if (activeTracks[track.id]) {
         const eff = nextMuted ? 0 : Math.round(((volumes[track.id] ?? 60) * masterVolume) / 100);
-        if (playbackSource === 'direct') {
-          const audio = audioRefs.current[track.id];
-          if (audio) {
-            audio.volume = Math.min(1, Math.max(0, eff / 100));
-          }
-        } else {
-          setContinuousSoundVolume(track.id, eff / 100);
+        const audio = audioRefs.current[track.id];
+        if (audio) {
+          audio.volume = Math.min(1, Math.max(0, eff / 100));
         }
       }
     });
@@ -543,12 +518,6 @@ export const SoundsSection: React.FC = () => {
       resetActive[t.id] = false;
     });
     setActiveTracks(resetActive);
-  };
-
-  // Switch between ad-free recordings and offline Web Audio generator
-  const switchPlaybackSource = (src: 'direct' | 'webaudio') => {
-    handleStopAll();
-    setPlaybackSource(src);
   };
 
   // Apply a pre-made soundscape combination
@@ -571,16 +540,12 @@ export const SoundsSection: React.FC = () => {
     setVolumes(newVolumes);
     setActiveTracks(newActive);
 
-    // 3. Start audio in chosen mode
+    // 3. Start audio
     Object.entries(preset.tracks).forEach(([id, vol]) => {
       const eff = isMasterMuted ? 0 : Math.round((vol * masterVolume) / 100);
-      if (playbackSource === 'direct') {
-        const audio = getOrCreateAudio(id);
-        audio.volume = Math.min(1, Math.max(0, eff / 100));
-        audio.play().catch(() => {});
-      } else {
-        playContinuousSound(id, eff / 100);
-      }
+      const audio = getOrCreateAudio(id);
+      audio.volume = Math.min(1, Math.max(0, eff / 100));
+      audio.play().catch(() => {});
     });
   };
 
@@ -601,33 +566,9 @@ export const SoundsSection: React.FC = () => {
             Zvuková oáza & kombinovaný mixér
           </h2>
 
-          <p className="text-sm sm:text-base text-[#616D7E] leading-relaxed mb-6">
+          <p className="text-sm sm:text-base text-[#616D7E] leading-relaxed">
             Můžeš si pustit kterýkoliv zvuk samostatně, nebo libovolně <strong>nakombinovat více stop najednou</strong> (např. déšť + praskání ohně + kočičí předení) a každé nastavit přesnou hlasitost.
           </p>
-
-          {/* Source Switcher */}
-          <div className="inline-flex items-center gap-1.5 p-1 bg-white/70 border border-[#E2DAED] rounded-2xl shadow-2xs">
-            <button
-              onClick={() => switchPlaybackSource('direct')}
-              className={`px-3.5 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                playbackSource === 'direct'
-                  ? 'bg-[#E4D8F3] text-[#432A64] font-semibold shadow-xs'
-                  : 'text-[#626A7A] hover:text-[#2D223F]'
-              }`}
-            >
-              Originální záznamy (100% bez reklam)
-            </button>
-            <button
-              onClick={() => switchPlaybackSource('webaudio')}
-              className={`px-3.5 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                playbackSource === 'webaudio'
-                  ? 'bg-[#CDE8D8] text-[#24523A] font-semibold shadow-xs'
-                  : 'text-[#626A7A] hover:text-[#2D223F]'
-              }`}
-            >
-              Vestavěný offline syntetizátor
-            </button>
-          </div>
         </div>
 
         {/* PRESET SOUNDSCAPES (Uklidňující kombinace na 1 kliknutí) */}
@@ -759,17 +700,15 @@ export const SoundsSection: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {playbackSource === 'direct' && (
-                        <button
-                          type="button"
-                          onClick={() => handleSeekForward(track.id, 15)}
-                          className="px-1.5 py-1 rounded-lg text-[#554271] hover:bg-[#F0EAF7] border border-black/5 transition-colors cursor-pointer text-[10px] font-semibold flex items-center gap-0.5"
-                          title="Posunout záznam o +15 sekund dopředu"
-                        >
-                          <FastForward className="w-3 h-3 text-[#79629E]" />
-                          <span>+15s</span>
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleSeekForward(track.id, 15)}
+                        className="px-1.5 py-1 rounded-lg text-[#554271] hover:bg-[#F0EAF7] border border-black/5 transition-colors cursor-pointer text-[10px] font-semibold flex items-center gap-0.5"
+                        title="Posunout záznam o +15 sekund dopředu"
+                      >
+                        <FastForward className="w-3 h-3 text-[#79629E]" />
+                        <span>+15s</span>
+                      </button>
                       <input
                         type="range"
                         min="5"
@@ -951,10 +890,10 @@ export const SoundsSection: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Ad-free status badge when active */}
-                    {isPlaying && playbackSource === 'direct' && (
+                    {/* Active status badge */}
+                    {isPlaying && (
                       <div className="mb-3 px-3 py-1.5 rounded-xl border border-[#C6DEC9] bg-[#EAF6EC] text-[#225732] text-[11px] font-medium flex items-center justify-between">
-                        <span>✓ Hraje čistý záznam (bez reklam a čekání)</span>
+                        <span>✓ Hraje v mixu</span>
                         <span className="animate-pulse">●</span>
                       </div>
                     )}
