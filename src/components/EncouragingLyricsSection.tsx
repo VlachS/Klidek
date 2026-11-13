@@ -4,11 +4,12 @@
  */
 
 import React, { useState } from 'react';
-import { Music, Heart, Sparkles, RefreshCw, Disc3, Quote } from 'lucide-react';
+import { Music, Heart, Sparkles, RefreshCw, Disc3, Quote, Languages } from 'lucide-react';
 
 interface LyricExcerpt {
   id: string;
   lines: string[];
+  linesCz: string[];
   songTitle: string;
   artist: string;
   standalone?: boolean;
@@ -22,6 +23,10 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       'I know life can be a bitch, some call her Monday',
       "And I'm thinkin' of you, dear, I hope you're okay, yeah",
     ],
+    linesCz: [
+      'Vím, že život umí být pěkná potvora – někteří jí říkají pondělí',
+      'A myslím na tebe, drahý/á, doufám, že jsi v pořádku',
+    ],
     songTitle: "I Know You're Hurting",
     artist: 'RAYE',
   },
@@ -31,12 +36,17 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       "If you need two more arms to hold these burdens, I'm here",
       "I said a prayer for you, I hope it's working",
     ],
+    linesCz: [
+      'Pokud potřebuješ další dvě paže, které ti pomohou nést tuhle tíhu, jsem tady',
+      'Pomodlila jsem se za tebe a doufám, že to pomáhá',
+    ],
     songTitle: "I Know You're Hurting",
     artist: 'RAYE',
   },
   {
     id: 'hurting-3',
     lines: ["Please, my dear, don't stop believing in miracles"],
+    linesCz: ['Prosím, nejdražší, nepřestávej věřit na zázraky'],
     songTitle: "I Know You're Hurting",
     artist: 'RAYE',
     standalone: true,
@@ -46,6 +56,10 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
     lines: [
       'Please, stop trying to be so strong all alone, all alone',
       "You don't have to do this all alone",
+    ],
+    linesCz: [
+      'Prosím, přestaň se snažit být tak silný/á úplně sám, úplně sama',
+      'Nemusíš to všechno zvládat o samotě',
     ],
     songTitle: "I Know You're Hurting",
     artist: 'RAYE',
@@ -57,12 +71,18 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       "Don't you give up on your life",
       'Stay with me now, oh',
     ],
+    linesCz: [
+      'Jestli tohle posloucháš, potřebuji, abys mě teď slyšel/a',
+      'Nevzdávej svůj život',
+      'Zůstaň tu teď se mnou',
+    ],
     songTitle: "I Know You're Hurting",
     artist: 'RAYE',
   },
   {
     id: 'hurting-6',
     lines: ["It's gonna be fine, it's gonna be alright, it's gonna be okay, it's gonna be okay"],
+    linesCz: ['Bude to dobré, všechno dobře dopadne, bude to v pořádku, bude to v pořádku'],
     songTitle: "I Know You're Hurting",
     artist: 'RAYE',
     standalone: true,
@@ -72,6 +92,7 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
   {
     id: 'lifeboat-1',
     lines: ['Say, "I\'m not giving up yet"'],
+    linesCz: ['Řekni si: „Ještě to nevzdávám“'],
     songTitle: 'Lifeboat',
     artist: 'RAYE',
     standalone: true,
@@ -83,12 +104,18 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       "There's a way forward",
       "There's, there's hope",
     ],
+    linesCz: [
+      'I když teď procházíš temnotou, budoucnost existuje',
+      'Existuje cesta vpřed',
+      'Je tu, pořád je tu naděje',
+    ],
     songTitle: 'Lifeboat',
     artist: 'RAYE',
   },
   {
     id: 'lifeboat-3',
     lines: ["Don't know how I'll do this", "I'm not giving up"],
+    linesCz: ['Nevím sice, jak tohle zvládnu', 'Ale nevzdávám se'],
     songTitle: 'Lifeboat',
     artist: 'RAYE',
   },
@@ -99,6 +126,11 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       'But I need you to speak it (never give up)',
       'Say it like you mean it',
     ],
+    linesCz: [
+      'Možná tomu teď ještě nevěříš',
+      'Ale potřebuji, abys to vyslovil/a nahlas (nikdy se nevzdávej)',
+      'Řekni to tak, že to myslíš vážně',
+    ],
     songTitle: 'Lifeboat',
     artist: 'RAYE',
   },
@@ -107,6 +139,7 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
   {
     id: 'just-breathe-1',
     lines: ["You're gonna be fine", "You're doing alright"],
+    linesCz: ['Budeš v pořádku', 'Vedeš si dobře'],
     songTitle: 'Just Breathe',
     artist: 'Jeremy Zucker & Chelsea Cutler',
     standalone: true,
@@ -116,6 +149,7 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
   {
     id: 'joy-1',
     lines: ['I may cry through the night, but my joy comes in the morning'],
+    linesCz: ['Možná propláču celou noc, ale s ránem přichází má radost'],
     songTitle: 'Joy',
     artist: 'RAYE',
     standalone: true,
@@ -123,6 +157,7 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
   {
     id: 'joy-2',
     lines: ['I declare there will be joy, I declare there will be joy, I declare there will be joy'],
+    linesCz: ['Prohlašuji, že přijde radost, přijde radost, zase přijde radost'],
     songTitle: 'Joy',
     artist: 'RAYE',
     standalone: true,
@@ -133,6 +168,11 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       "There's a war in your mind",
       'Your sorrows may endure',
       'But the light comes with the morning',
+    ],
+    linesCz: [
+      'V tvé mysli teď zuří válka',
+      'Tvůj smutek možná ještě chvíli potrvá',
+      'Ale s ránem vždycky přichází světlo',
     ],
     songTitle: 'Joy',
     artist: 'RAYE',
@@ -147,6 +187,12 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       'Life can be hard',
       'But we only get one',
     ],
+    linesCz: [
+      'Čekají nás šťastnější časy',
+      'Život není fér',
+      'Život umí být těžký',
+      'Ale máme jenom jeden',
+    ],
     songTitle: 'Happier Times Ahead',
     artist: 'RAYE',
   },
@@ -156,6 +202,11 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
       'Whatever may come',
       'Find a little faith to hold on, my friend',
       'There will be happier times again',
+    ],
+    linesCz: [
+      'Ať už přijde cokoliv',
+      'Najdi v sobě kousek víry a drž se, příteli',
+      'Zase přijdou šťastnější časy',
     ],
     songTitle: 'Happier Times Ahead',
     artist: 'RAYE',
@@ -167,6 +218,10 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
     lines: [
       'The cold never lasts, my darling',
       'It just teaches the heart how to burn',
+    ],
+    linesCz: [
+      'Chlad nikdy netrvá věčně, můj milý / má milá',
+      'Jen učí srdce, jak znovu hřát a hořet',
     ],
     songTitle: 'Click Clack Symphony',
     artist: 'RAYE',
@@ -186,11 +241,37 @@ const SONG_CREDITS = [
 export const EncouragingLyricsSection: React.FC = () => {
   const [featuredIndex, setFeaturedIndex] = useState<number>(2);
   const [selectedSongFilter, setSelectedSongFilter] = useState<string>('all');
+  const [showGlobalCzech, setShowGlobalCzech] = useState<boolean>(false);
+  const [cardTranslated, setCardTranslated] = useState<Record<string, boolean>>({});
 
   const featured = LYRIC_EXCERPTS[featuredIndex];
+  const isFeaturedTranslated = showGlobalCzech || !!cardTranslated[featured.id];
 
   const handleNextFeatured = () => {
     setFeaturedIndex((prev) => (prev + 1) % LYRIC_EXCERPTS.length);
+  };
+
+  const toggleSingleCardTranslation = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (showGlobalCzech) {
+      // If global Czech is active, toggling an individual card switches off global mode and keeps others
+      const nextMap: Record<string, boolean> = {};
+      LYRIC_EXCERPTS.forEach((item) => {
+        nextMap[item.id] = item.id !== id;
+      });
+      setShowGlobalCzech(false);
+      setCardTranslated(nextMap);
+    } else {
+      setCardTranslated((prev) => ({ ...prev, [id]: !prev[id] }));
+    }
+  };
+
+  const handleToggleAllTranslations = () => {
+    const next = !showGlobalCzech;
+    setShowGlobalCzech(next);
+    if (!next) {
+      setCardTranslated({});
+    }
   };
 
   const filteredLyrics =
@@ -202,7 +283,7 @@ export const EncouragingLyricsSection: React.FC = () => {
     <section className="py-16 bg-white/50 border-t border-[#DFD5EC] transition-colors duration-500">
       <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
+        <div className="text-center max-w-2xl mx-auto mb-8">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E8DFF5] border border-[#D5C6E8] text-xs font-medium text-[#543878] mb-3">
             <Music className="w-3.5 h-3.5" />
             <span>Slova z písní, která drží nad vodou</span>
@@ -212,9 +293,27 @@ export const EncouragingLyricsSection: React.FC = () => {
             Když potřebuješ slyšet, že v tom nejsi sám
           </h2>
 
-          <p className="text-sm sm:text-base text-[#616D7E] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#616D7E] leading-relaxed mb-5">
             Úryvky z písní, které připomínají, že i po těžké noci přichází ráno, naděje a cesta dál – a že na všechno nemusíš stačit sám.
           </p>
+
+          {/* Global Czech Translation Toggle Button */}
+          <button
+            type="button"
+            onClick={handleToggleAllTranslations}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border shadow-2xs ${
+              showGlobalCzech
+                ? 'bg-[#493563] text-white border-transparent'
+                : 'bg-white/90 text-[#43305D] border-[#DACCEE] hover:bg-white'
+            }`}
+          >
+            <Languages className="w-4 h-4" />
+            <span>
+              {showGlobalCzech
+                ? 'Zobrazit původní anglický text (EN)'
+                : 'Přeložit všechny texty do češtiny (CZ)'}
+            </span>
+          </button>
         </div>
 
         {/* Featured Quote Spotlight */}
@@ -225,7 +324,7 @@ export const EncouragingLyricsSection: React.FC = () => {
             </div>
 
             <blockquote className="space-y-2 mb-6">
-              {featured.lines.map((line, idx) => (
+              {(isFeaturedTranslated ? featured.linesCz : featured.lines).map((line, idx, arr) => (
                 <p
                   key={idx}
                   className={`${
@@ -235,13 +334,13 @@ export const EncouragingLyricsSection: React.FC = () => {
                   } text-[#2E2342] font-display leading-relaxed tracking-tight`}
                 >
                   {idx === 0 ? `„${line}` : line}
-                  {idx === featured.lines.length - 1 ? '“' : ''}
+                  {idx === arr.length - 1 ? '“' : ''}
                 </p>
               ))}
             </blockquote>
 
-            {/* Proper Song & Artist Credit Badge in Spotlight */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-[#DFD5EC]">
+            {/* Proper Song & Artist Credit Badge + Translation & Next Controls */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5 pt-4 border-t border-[#DFD5EC]">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF6FC] border border-[#E4DCF0] text-xs text-[#43305D]">
                 <Disc3 className="w-3.5 h-3.5 text-[#543878]" />
                 <span>
@@ -252,6 +351,19 @@ export const EncouragingLyricsSection: React.FC = () => {
                   Interpret: <strong className="font-semibold">{featured.artist}</strong>
                 </span>
               </div>
+
+              <button
+                type="button"
+                onClick={(e) => toggleSingleCardTranslation(featured.id, e)}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-semibold transition-all cursor-pointer ${
+                  isFeaturedTranslated
+                    ? 'bg-[#493563] text-white border-transparent'
+                    : 'bg-white border-[#DACCEE] text-[#43305D] hover:bg-[#FAF6FC]'
+                }`}
+              >
+                <Languages className="w-3.5 h-3.5" />
+                <span>{isFeaturedTranslated ? 'Původní text (EN)' : 'Český překlad (CZ)'}</span>
+              </button>
 
               <button
                 type="button"
@@ -299,6 +411,8 @@ export const EncouragingLyricsSection: React.FC = () => {
           {filteredLyrics.map((excerpt) => {
             const globalIdx = LYRIC_EXCERPTS.findIndex((e) => e.id === excerpt.id);
             const isSelected = globalIdx === featuredIndex;
+            const isTranslated = showGlobalCzech || !!cardTranslated[excerpt.id];
+            const activeLines = isTranslated ? excerpt.linesCz : excerpt.lines;
 
             return (
               <div
@@ -311,22 +425,39 @@ export const EncouragingLyricsSection: React.FC = () => {
                 }`}
               >
                 <div>
-                  {/* Top Badge: Standalone thought vs stanza */}
+                  {/* Top Badge + Per-Card Translation Button */}
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#E8DFF5] text-[#43305D]">
                       <Sparkles className="w-2.5 h-2.5" />
                       <span>{excerpt.standalone ? 'Samostatná myšlenka' : 'Sloka písně'}</span>
                     </span>
-                    <Heart
-                      className={`w-3.5 h-3.5 transition-colors ${
-                        isSelected ? 'text-[#543878] fill-current' : 'text-[#B8AFC7] group-hover:text-[#543878]'
-                      }`}
-                    />
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={(e) => toggleSingleCardTranslation(excerpt.id, e)}
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border transition-all cursor-pointer ${
+                          isTranslated
+                            ? 'bg-[#493563] text-white border-transparent'
+                            : 'bg-white border-[#DACCEE] text-[#43305D] hover:bg-[#FAF6FC]'
+                        }`}
+                        title={isTranslated ? 'Přepnout zpět na anglický originál' : 'Zobrazit český překlad'}
+                      >
+                        <Languages className="w-3 h-3" />
+                        <span>{isTranslated ? 'EN originál' : 'Český překlad'}</span>
+                      </button>
+
+                      <Heart
+                        className={`w-3.5 h-3.5 transition-colors ${
+                          isSelected ? 'text-[#543878] fill-current' : 'text-[#B8AFC7] group-hover:text-[#543878]'
+                        }`}
+                      />
+                    </div>
                   </div>
 
                   {/* Lyric Lines */}
                   <blockquote className="space-y-1.5 my-2">
-                    {excerpt.lines.map((line, i) => (
+                    {activeLines.map((line, i) => (
                       <p
                         key={i}
                         className={`${
@@ -336,7 +467,7 @@ export const EncouragingLyricsSection: React.FC = () => {
                         } leading-relaxed font-display`}
                       >
                         {i === 0 ? `„${line}` : line}
-                        {i === excerpt.lines.length - 1 ? '“' : ''}
+                        {i === activeLines.length - 1 ? '“' : ''}
                       </p>
                     ))}
                   </blockquote>
