@@ -15,6 +15,7 @@ interface LyricExcerpt {
 }
 
 const LYRIC_EXCERPTS: LyricExcerpt[] = [
+  // RAYE — I Know You're Hurting
   {
     id: 'hurting-1',
     lines: [
@@ -66,6 +67,8 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
     artist: 'RAYE',
     standalone: true,
   },
+
+  // RAYE — Lifeboat
   {
     id: 'lifeboat-1',
     lines: ['Say, "I\'m not giving up yet"'],
@@ -89,11 +92,100 @@ const LYRIC_EXCERPTS: LyricExcerpt[] = [
     songTitle: 'Lifeboat',
     artist: 'RAYE',
   },
+  {
+    id: 'lifeboat-4',
+    lines: [
+      'You might not believe it',
+      'But I need you to speak it (never give up)',
+      'Say it like you mean it',
+    ],
+    songTitle: 'Lifeboat',
+    artist: 'RAYE',
+  },
+
+  // Jeremy Zucker & Chelsea Cutler — Just Breathe
+  {
+    id: 'just-breathe-1',
+    lines: ["You're gonna be fine", "You're doing alright"],
+    songTitle: 'Just Breathe',
+    artist: 'Jeremy Zucker & Chelsea Cutler',
+    standalone: true,
+  },
+
+  // RAYE — Joy
+  {
+    id: 'joy-1',
+    lines: ['I may cry through the night, but my joy comes in the morning'],
+    songTitle: 'Joy',
+    artist: 'RAYE',
+    standalone: true,
+  },
+  {
+    id: 'joy-2',
+    lines: ['I declare there will be joy, I declare there will be joy, I declare there will be joy'],
+    songTitle: 'Joy',
+    artist: 'RAYE',
+    standalone: true,
+  },
+  {
+    id: 'joy-3',
+    lines: [
+      "There's a war in your mind",
+      'Your sorrows may endure',
+      'But the light comes with the morning',
+    ],
+    songTitle: 'Joy',
+    artist: 'RAYE',
+  },
+
+  // RAYE — Happier Times Ahead (rozděleno do 2 přirozených celků)
+  {
+    id: 'happier-1',
+    lines: [
+      'Happier times ahead',
+      'Life is not fair',
+      'Life can be hard',
+      'But we only get one',
+    ],
+    songTitle: 'Happier Times Ahead',
+    artist: 'RAYE',
+  },
+  {
+    id: 'happier-2',
+    lines: [
+      'Whatever may come',
+      'Find a little faith to hold on, my friend',
+      'There will be happier times again',
+    ],
+    songTitle: 'Happier Times Ahead',
+    artist: 'RAYE',
+  },
+
+  // RAYE — Click Clack Symphony
+  {
+    id: 'click-clack-1',
+    lines: [
+      'The cold never lasts, my darling',
+      'It just teaches the heart how to burn',
+    ],
+    songTitle: 'Click Clack Symphony',
+    artist: 'RAYE',
+    standalone: true,
+  },
+];
+
+const SONG_CREDITS = [
+  { songTitle: "I Know You're Hurting", artist: 'RAYE' },
+  { songTitle: 'Lifeboat', artist: 'RAYE' },
+  { songTitle: 'Joy', artist: 'RAYE' },
+  { songTitle: 'Happier Times Ahead', artist: 'RAYE' },
+  { songTitle: 'Click Clack Symphony', artist: 'RAYE' },
+  { songTitle: 'Just Breathe', artist: 'Jeremy Zucker & Chelsea Cutler' },
 ];
 
 export const EncouragingLyricsSection: React.FC = () => {
-  const [featuredIndex, setFeaturedIndex] = useState<number>(2); // Default to "Please, my dear, don't stop believing in miracles"
-  const [selectedSongFilter, setSelectedSongFilter] = useState<'all' | "I Know You're Hurting" | 'Lifeboat'>('all');
+  const [featuredIndex, setFeaturedIndex] = useState<number>(2);
+  const [selectedSongFilter, setSelectedSongFilter] = useState<string>('all');
 
   const featured = LYRIC_EXCERPTS[featuredIndex];
 
@@ -121,7 +213,7 @@ export const EncouragingLyricsSection: React.FC = () => {
           </h2>
 
           <p className="text-sm sm:text-base text-[#616D7E] leading-relaxed">
-            Úryvky z písní od <strong>RAYE</strong>, které připomínají, že i v těžkých chvílích existuje naděje, cesta dál a že na všechno nemusíš stačit sám.
+            Úryvky z písní, které připomínají, že i po těžké noci přichází ráno, naděje a cesta dál – a že na všechno nemusíš stačit sám.
           </p>
         </div>
 
@@ -150,7 +242,7 @@ export const EncouragingLyricsSection: React.FC = () => {
 
             {/* Proper Song & Artist Credit Badge in Spotlight */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-[#DFD5EC]">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF6FC] border border-[#E4DCF0] text-xs text-[#43305D]">
+              <div className="inline-flex flex-wrap items-center justify-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF6FC] border border-[#E4DCF0] text-xs text-[#43305D]">
                 <Disc3 className="w-3.5 h-3.5 text-[#543878]" />
                 <span>
                   Píseň: <strong className="font-semibold">„{featured.songTitle}“</strong>
@@ -186,28 +278,20 @@ export const EncouragingLyricsSection: React.FC = () => {
           >
             Všechny úryvky ({LYRIC_EXCERPTS.length})
           </button>
-          <button
-            type="button"
-            onClick={() => setSelectedSongFilter("I Know You're Hurting")}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
-              selectedSongFilter === "I Know You're Hurting"
-                ? 'bg-[#493563] text-white border-transparent shadow-2xs'
-                : 'bg-white/80 text-[#43305D] border-[#DACCEE] hover:bg-white'
-            }`}
-          >
-            RAYE — I Know You're Hurting
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedSongFilter('Lifeboat')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
-              selectedSongFilter === 'Lifeboat'
-                ? 'bg-[#493563] text-white border-transparent shadow-2xs'
-                : 'bg-white/80 text-[#43305D] border-[#DACCEE] hover:bg-white'
-            }`}
-          >
-            RAYE — Lifeboat
-          </button>
+          {SONG_CREDITS.map((credit) => (
+            <button
+              key={credit.songTitle}
+              type="button"
+              onClick={() => setSelectedSongFilter(credit.songTitle)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
+                selectedSongFilter === credit.songTitle
+                  ? 'bg-[#493563] text-white border-transparent shadow-2xs'
+                  : 'bg-white/80 text-[#43305D] border-[#DACCEE] hover:bg-white'
+              }`}
+            >
+              {credit.artist} — {credit.songTitle}
+            </button>
+          ))}
         </div>
 
         {/* All Lyric Cards Grid */}
@@ -259,16 +343,16 @@ export const EncouragingLyricsSection: React.FC = () => {
                 </div>
 
                 {/* Proper Credit Footer on Every Card */}
-                <div className="mt-4 pt-3 border-t border-[#E4DCF0] flex items-center justify-between text-[11px] text-[#5B6778]">
-                  <div className="flex items-center gap-1.5 truncate">
+                <div className="mt-4 pt-3 border-t border-[#E4DCF0] flex flex-col gap-0.5 text-[11px] text-[#5B6778]">
+                  <div className="flex items-center gap-1.5">
                     <Music className="w-3 h-3 text-[#543878] shrink-0" />
-                    <span className="font-semibold text-[#43305D] truncate">
-                      {excerpt.songTitle}
+                    <span className="font-semibold text-[#43305D]">
+                      „{excerpt.songTitle}“
                     </span>
                   </div>
-                  <span className="font-semibold text-[#43305D] shrink-0 ml-2">
-                    — {excerpt.artist}
-                  </span>
+                  <div className="text-[11px] text-[#43305D] pl-4.5">
+                    Interpret: <strong className="font-semibold">{excerpt.artist}</strong>
+                  </div>
                 </div>
               </div>
             );
@@ -276,21 +360,26 @@ export const EncouragingLyricsSection: React.FC = () => {
         </div>
 
         {/* Formal Proper Credits Box */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-white/80 border border-[#DACCEE] max-w-3xl mx-auto text-center">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white/80 border border-[#DACCEE] max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#43305D] mb-2">
             <Disc3 className="w-4 h-4 text-[#543878]" />
             <span>Hudební kredity a autorské uvedení (Song Credits)</span>
           </div>
-          <p className="text-xs text-[#5A6577] leading-relaxed mb-3">
-            Všechny výše uvedené texty pocházejí z autorské tvorby britské zpěvačky a skladatelky <strong>RAYE</strong>:
+          <p className="text-xs text-[#5A6577] leading-relaxed mb-3.5">
+            Všechny uvedené texty písní náleží svým původním autorům a interpretům:
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-xs text-[#2E2342]">
-            <div className="px-3.5 py-2 rounded-xl bg-[#FAF6FC] border border-[#E4DCF0]">
-              <strong>„I Know You're Hurting“</strong> — Interpret & autor: <strong>RAYE</strong>
-            </div>
-            <div className="px-3.5 py-2 rounded-xl bg-[#FAF6FC] border border-[#E4DCF0]">
-              <strong>„Lifeboat“</strong> — Interpret & autor: <strong>RAYE</strong>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs text-[#2E2342]">
+            {SONG_CREDITS.map((credit) => (
+              <div
+                key={credit.songTitle}
+                className="px-3.5 py-2.5 rounded-xl bg-[#FAF6FC] border border-[#E4DCF0] flex flex-col justify-center"
+              >
+                <span className="font-semibold text-[#2E2342]">„{credit.songTitle}“</span>
+                <span className="text-[11px] text-[#5A6577] mt-0.5">
+                  Interpret: <strong className="text-[#43305D] font-semibold">{credit.artist}</strong>
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
