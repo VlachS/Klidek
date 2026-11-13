@@ -11,8 +11,9 @@ import { SoundsSection } from './components/SoundsSection';
 import { GroundingSection } from './components/GroundingSection';
 import { MoodCheck } from './components/MoodCheck';
 import { HelpingOthersSection } from './components/HelpingOthersSection';
+import { EncouragingLyricsSection } from './components/EncouragingLyricsSection';
 import { Footer } from './components/Footer';
-import { Sparkles, Palette } from 'lucide-react';
+import { Palette } from 'lucide-react';
 
 type PastelTheme = 'lavender' | 'mint' | 'sky';
 
@@ -94,23 +95,8 @@ export default function App() {
         {/* 6. Jak pomoci někomu, kdo má stres nebo panickou ataku */}
         <HelpingOthersSection onNavigate={scrollToSection} />
 
-        {/* Cohesive Summary Banner */}
-        <section className="py-14 bg-white/50 border-t border-[#DFD5EC]">
-          <div className="max-w-3xl mx-auto px-6 text-center">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white/85 border border-[#DACCEE] shadow-xs">
-              <div className="w-11 h-11 rounded-2xl bg-[#E8DFF5] flex items-center justify-center mx-auto mb-3 text-[#5A4375]">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-medium text-[#2E2342] font-display mb-2">
-                Tvůj klidný koutek je plně vybaven
-              </h3>
-              <p className="text-xs sm:text-sm text-[#616D7E] max-w-xl mx-auto leading-relaxed">
-                Všechny tvé oblíbené zvuky (déšť, moře, krb, vánek, listí i předení kočičky Míci) hrají nepřetržitě.
-                Uzemňující kotva, dechový kruh, metoda IMPROVE a relaxační minihry jsou připraveny k okamžitému zklidnění.
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* 7. Povzbuzující texty písní (RAYE - I Know You're Hurting & Lifeboat) */}
+        <EncouragingLyricsSection />
       </main>
 
       {/* Footer */}
