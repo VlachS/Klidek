@@ -358,7 +358,7 @@ export const SoundsSection: React.FC = () => {
     return initial;
   });
 
-  const [masterVolume, setMasterVolume] = useState<number>(85);
+  const [masterVolume, setMasterVolume] = useState<number>(100);
   const [isMasterMuted, setIsMasterMuted] = useState<boolean>(false);
 
   const [volumes, setVolumes] = useState<Record<string, number>>(() => {
@@ -372,11 +372,25 @@ export const SoundsSection: React.FC = () => {
   // Keep references to ad-free HTML5 Audio elements for each track
   const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({});
 
-  // Get or lazily create the ad-free HTML5 Audio instance for a track
+  // Convert 0-100 slider values into a natural logarithmic/perceptual audio volume (0.0 - 1.0)
+  // Human hearing is logarithmic: linear 50% (-6 dB) sounds almost as loud as 100%,
+  // whereas an exponent of ~2.2 makes 50% sound genuinely half as loud (-13 dB) and 5% a true whisper (-57 dB).
+  const computeAudioGain = useCallback(
+    (trackVol: number, masterVol: number, muted: boolean): number => {
+      if (muted || trackVol <= 0 || masterVol <= 0) return 0;
+      const tNorm = Math.min(1, Math.max(0, trackVol / 100));
+      const mNorm = Math.min(1, Math.max(0, masterVol / 100));
+      const gain = Math.pow(tNorm, 2.2) * Math.pow(mNorm, 1.5);
+      return Math.min(1, Math.max(0, gain));
+    },
+    []
+  );
+
+  // Get or lazily create the ad-free HTML5 Audio instance for a track (with ?v=2 cache buster for normalized audio)
   const getOrCreateAudio = useCallback((id: string): HTMLAudioElement => {
     let audio = audioRefs.current[id];
     if (!audio) {
-      audio = new Audio(`./audio/${id}.mp3`);
+      audio = new Audio(`./audio/${id}.mp3?v=2`);
       audio.loop = true;
       audio.preload = 'auto';
       audioRefs.current[id] = audio;
@@ -384,13 +398,24 @@ export const SoundsSection: React.FC = () => {
     return audio;
   }, []);
 
-  // Compute effective volume for a track considering master volume and mute
+  // Compute effective percentage for UI display
   const getEffectiveVolume = useCallback((trackId: string, customTrackVol?: number, customMasterVol?: number): number => {
     if (isMasterMuted) return 0;
     const tVol = customTrackVol !== undefined ? customTrackVol : (volumes[trackId] ?? 60);
     const mVol = customMasterVol !== undefined ? customMasterVol : masterVolume;
     return Math.round((tVol * mVol) / 100);
   }, [isMasterMuted, volumes, masterVolume]);
+
+  // Guarantee all playing HTMLAudioElements stay in sync with volume states
+  useEffect(() => {
+    SOUND_TRACKS.forEach((track) => {
+      const audio = audioRefs.current[track.id];
+      if (audio) {
+        const tVol = volumes[track.id] ?? track.defaultVolume;
+        audio.volume = computeAudioGain(tVol, masterVolume, isMasterMuted);
+      }
+    });
+  }, [volumes, masterVolume, isMasterMuted, computeAudioGain]);
 
   // Helper to format seconds as M:SS
   const formatSeconds = (totalSeconds: number): string => {
@@ -411,10 +436,10 @@ export const SoundsSection: React.FC = () => {
   // Jump to specific timestamp in track
   const handleSeek = (id: string, seconds: number) => {
     setTrackPositions((prev) => ({ ...prev, [id]: seconds }));
-    const eff = getEffectiveVolume(id);
+    const tVol = volumes[id] ?? 60;
 
     const audio = getOrCreateAudio(id);
-    audio.volume = Math.min(1, Math.max(0, eff / 100));
+    audio.volume = computeAudioGain(tVol, masterVolume, isMasterMuted);
     if (audio.duration && Number.isFinite(audio.duration)) {
       audio.currentTime = seconds % audio.duration;
     }
@@ -444,30 +469,27 @@ export const SoundsSection: React.FC = () => {
 
   // Toggle single sound track (does NOT stop other sounds - enables combining!)
   const handleToggleTrack = (id: string) => {
-    setActiveTracks((prev) => {
-      const willPlay = !prev[id];
-      const eff = getEffectiveVolume(id);
+    const willPlay = !activeTracks[id];
+    const tVol = volumes[id] ?? 60;
+    const audio = getOrCreateAudio(id);
+    audio.volume = computeAudioGain(tVol, masterVolume, isMasterMuted);
 
-      const audio = getOrCreateAudio(id);
-      audio.volume = Math.min(1, Math.max(0, eff / 100));
-      if (willPlay) {
-        audio.play().catch(() => {});
-      } else {
-        audio.pause();
-      }
+    if (willPlay) {
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
 
-      return { ...prev, [id]: willPlay };
-    });
+    setActiveTracks((prev) => ({ ...prev, [id]: willPlay }));
   };
 
   // Adjust volume for an individual track in real-time
   const handleVolumeChange = (id: string, newTrackVol: number) => {
     setVolumes((prev) => ({ ...prev, [id]: newTrackVol }));
-    const eff = getEffectiveVolume(id, newTrackVol);
 
     const audio = audioRefs.current[id];
     if (audio) {
-      audio.volume = Math.min(1, Math.max(0, eff / 100));
+      audio.volume = computeAudioGain(newTrackVol, masterVolume, isMasterMuted);
     }
   };
 
@@ -479,12 +501,10 @@ export const SoundsSection: React.FC = () => {
     }
 
     SOUND_TRACKS.forEach((track) => {
-      if (activeTracks[track.id]) {
-        const eff = Math.round(((volumes[track.id] ?? 60) * newMaster) / 100);
-        const audio = audioRefs.current[track.id];
-        if (audio) {
-          audio.volume = Math.min(1, Math.max(0, eff / 100));
-        }
+      const audio = audioRefs.current[track.id];
+      if (audio) {
+        const tVol = volumes[track.id] ?? track.defaultVolume;
+        audio.volume = computeAudioGain(tVol, newMaster, false);
       }
     });
   };
@@ -495,12 +515,10 @@ export const SoundsSection: React.FC = () => {
     setIsMasterMuted(nextMuted);
 
     SOUND_TRACKS.forEach((track) => {
-      if (activeTracks[track.id]) {
-        const eff = nextMuted ? 0 : Math.round(((volumes[track.id] ?? 60) * masterVolume) / 100);
-        const audio = audioRefs.current[track.id];
-        if (audio) {
-          audio.volume = Math.min(1, Math.max(0, eff / 100));
-        }
+      const audio = audioRefs.current[track.id];
+      if (audio) {
+        const tVol = volumes[track.id] ?? track.defaultVolume;
+        audio.volume = computeAudioGain(tVol, masterVolume, nextMuted);
       }
     });
   };
@@ -540,11 +558,10 @@ export const SoundsSection: React.FC = () => {
     setVolumes(newVolumes);
     setActiveTracks(newActive);
 
-    // 3. Start audio
+    // 3. Start audio with perceptual volume curve
     Object.entries(preset.tracks).forEach(([id, vol]) => {
-      const eff = isMasterMuted ? 0 : Math.round((vol * masterVolume) / 100);
       const audio = getOrCreateAudio(id);
-      audio.volume = Math.min(1, Math.max(0, eff / 100));
+      audio.volume = computeAudioGain(vol, masterVolume, isMasterMuted);
       audio.play().catch(() => {});
     });
   };
@@ -711,7 +728,7 @@ export const SoundsSection: React.FC = () => {
                       </button>
                       <input
                         type="range"
-                        min="5"
+                        min="0"
                         max="100"
                         value={vol}
                         onChange={(e) => handleVolumeChange(track.id, Number(e.target.value))}
@@ -913,7 +930,7 @@ export const SoundsSection: React.FC = () => {
 
                     <input
                       type="range"
-                      min="5"
+                      min="0"
                       max="100"
                       value={vol}
                       onChange={(e) => handleVolumeChange(track.id, Number(e.target.value))}
