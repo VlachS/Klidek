@@ -8,6 +8,7 @@ import {
   Play,
   Square,
   Volume2,
+  Volume1,
   VolumeX,
   Sliders,
   Sparkles,
@@ -20,18 +21,14 @@ import {
   Heart,
   ExternalLink,
   Layers,
-  RotateCcw,
   FastForward,
   Droplets,
   Bird,
   CloudLightning,
+  Minus,
+  Plus,
 } from 'lucide-react';
-import {
-  playContinuousSound,
-  stopContinuousSound,
-  setContinuousSoundVolume,
-  stopAllContinuousSounds,
-} from '../utils/soundEffects';
+import { stopAllContinuousSounds } from '../utils/soundEffects';
 
 export interface SoundCue {
   label: string;
@@ -69,7 +66,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#E3EFF8]',
     accentText: 'text-[#285779]',
     tag: 'Bubnování na parapet',
-    defaultVolume: 75,
+    defaultVolume: 50,
     startTime: 45,
     cues: [
       { label: '0:45 (Začátek)', time: 45, tip: 'Okamžitý začátek bubnování kapek' },
@@ -89,7 +86,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#ECE4F7]',
     accentText: 'text-[#503E6B]',
     tag: 'Příboj bez větru',
-    defaultVolume: 65,
+    defaultVolume: 50,
     startTime: 10,
     cues: [
       { label: '0:10 (Začátek)', time: 10, tip: 'První vlny přelévající se přes břeh' },
@@ -109,7 +106,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#F5E6EC]',
     accentText: 'text-[#6D344B]',
     tag: 'Hřejivý oheň',
-    defaultVolume: 60,
+    defaultVolume: 50,
     startTime: 10,
     cues: [
       { label: '0:10 (Začátek)', time: 10, tip: 'Rozhořívající se suchá polínka' },
@@ -149,7 +146,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#F5ECE2]',
     accentText: 'text-[#684B31]',
     tag: 'Podzimní stezka',
-    defaultVolume: 65,
+    defaultVolume: 50,
     startTime: 10,
     cues: [
       { label: '0:10 (Začátek)', time: 10, tip: 'První křupnutí listí' },
@@ -169,7 +166,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#E0EFF8]',
     accentText: 'text-[#295973]',
     tag: 'Hlubina oceánu',
-    defaultVolume: 70,
+    defaultVolume: 50,
     startTime: 15,
     cues: [
       { label: '0:15 (Začátek)', time: 15, tip: 'První hluboký zpěv velryby' },
@@ -189,7 +186,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#F2E5F5]',
     accentText: 'text-[#5E3867]',
     tag: 'Kočičí teplo',
-    defaultVolume: 90,
+    defaultVolume: 65,
     startTime: 10,
     cues: [
       { label: '0:10 (Začátek)', time: 10, tip: 'První hřejivé zavrnění' },
@@ -209,7 +206,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#DFEFF0]',
     accentText: 'text-[#1F5453]',
     tag: 'Lesní bystřina',
-    defaultVolume: 70,
+    defaultVolume: 50,
     startTime: 15,
     cues: [
       { label: '0:15 (Začátek)', time: 15, tip: 'Zurčící bystřina přes kameny' },
@@ -229,7 +226,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#E3F4E6]',
     accentText: 'text-[#28572F]',
     tag: 'Ptačí zpěv',
-    defaultVolume: 60,
+    defaultVolume: 50,
     startTime: 10,
     cues: [
       { label: '0:10 (Začátek)', time: 10, tip: 'První ranní ptačí trilkování' },
@@ -249,7 +246,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#E5E9F8]',
     accentText: 'text-[#2E3C6E]',
     tag: 'Hřmění a déšť',
-    defaultVolume: 70,
+    defaultVolume: 50,
     startTime: 20,
     cues: [
       { label: '0:20 (Začátek)', time: 20, tip: 'Silný déšť a vzdálený hrom' },
@@ -269,7 +266,7 @@ const SOUND_TRACKS: SoundTrack[] = [
     activeBg: 'bg-[#F6EDE2]',
     accentText: 'text-[#6D492A]',
     tag: 'Plamínek & knot',
-    defaultVolume: 65,
+    defaultVolume: 50,
     startTime: 10,
     cues: [
       { label: '0:10 (Začátek)', time: 10, tip: 'První lupkání dřevěného knotu' },
@@ -292,9 +289,9 @@ const PRESET_MIXES: PresetMix[] = [
     tagline: 'Déšť bubnující na parapet, oheň v krbu a předení kočičky',
     icon: '🌧️🔥',
     tracks: {
-      rain: 80,
-      fire: 55,
-      cat: 65,
+      rain: 40,
+      fire: 65,
+      cat: 60,
     },
   },
   {
@@ -302,9 +299,9 @@ const PRESET_MIXES: PresetMix[] = [
     tagline: 'Bublající potůček, zpěv ptáčků a svěží vánek',
     icon: '🌲🐦',
     tracks: {
-      brook: 75,
-      birds: 65,
-      wind: 40,
+      brook: 55,
+      birds: 50,
+      wind: 35,
     },
   },
   {
@@ -312,8 +309,8 @@ const PRESET_MIXES: PresetMix[] = [
     tagline: 'Hluboká bouřka za oknem, hořící svíčka a kočičí předení',
     icon: '⛈️🕯️',
     tracks: {
-      thunder: 75,
-      candle: 65,
+      thunder: 55,
+      candle: 60,
       cat: 65,
     },
   },
@@ -322,9 +319,9 @@ const PRESET_MIXES: PresetMix[] = [
     tagline: 'Vlny příboje, zpěv velryb a mírný pobřežní vánek',
     icon: '🌊🐋',
     tracks: {
-      sea: 70,
-      whales: 80,
-      wind: 35,
+      sea: 50,
+      whales: 65,
+      wind: 30,
     },
   },
   {
@@ -332,9 +329,9 @@ const PRESET_MIXES: PresetMix[] = [
     tagline: 'Šustění suchého listí, svěží vánek a vzdálený déšť',
     icon: '🍂💨',
     tracks: {
-      leaves: 80,
-      wind: 60,
-      rain: 35,
+      leaves: 65,
+      wind: 45,
+      rain: 25,
     },
   },
   {
@@ -342,9 +339,9 @@ const PRESET_MIXES: PresetMix[] = [
     tagline: 'Jemný zpěv velryb, tiché moře a vrnění pro usnutí',
     icon: '🌙✨',
     tracks: {
-      whales: 65,
+      whales: 50,
       cat: 60,
-      sea: 45,
+      sea: 35,
     },
   },
 ];
@@ -369,53 +366,132 @@ export const SoundsSection: React.FC = () => {
     return initial;
   });
 
-  // Keep references to ad-free HTML5 Audio elements for each track
-  const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({});
+  // Store previous non-zero volume for each track so clicking the speaker icon can mute & restore
+  const prevVolumesRef = useRef<Record<string, number>>({});
 
-  // Convert 0-100 slider values into a natural logarithmic/perceptual audio volume (0.0 - 1.0)
-  // Human hearing is logarithmic: linear 50% (-6 dB) sounds almost as loud as 100%,
-  // whereas an exponent of ~2.2 makes 50% sound genuinely half as loud (-13 dB) and 5% a true whisper (-57 dB).
-  const computeAudioGain = useCallback(
-    (trackVol: number, masterVol: number, muted: boolean): number => {
-      if (muted || trackVol <= 0 || masterVol <= 0) return 0;
-      const tNorm = Math.min(1, Math.max(0, trackVol / 100));
-      const mNorm = Math.min(1, Math.max(0, masterVol / 100));
-      const gain = Math.pow(tNorm, 2.2) * Math.pow(mNorm, 1.5);
-      return Math.min(1, Math.max(0, gain));
+  // HTML5 Audio + Web Audio API GainNode references for hardware-level attenuation & boost (0% to 350%)
+  const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({});
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const gainNodesRef = useRef<Record<string, GainNode | null>>({});
+
+  // Per-track acoustic calibration so naturally quieter recordings (fire, candle, leaves, brook)
+  // match the loudness of denser recordings (rain, thunder) without distorting their dynamic range
+  const TRACK_BASE_GAIN: Record<string, number> = {
+    rain: 0.85,
+    thunder: 0.9,
+    sea: 1.35,
+    whales: 1.35,
+    birds: 1.45,
+    cat: 1.4,
+    brook: 1.9,
+    wind: 1.9,
+    fire: 2.8,
+    candle: 3.0,
+    leaves: 3.0,
+  };
+
+  // Apply volume to both HTMLAudioElement and Web Audio GainNode
+  // 0% = complete silence
+  // 1% - 50% = smooth logarithmic attenuation from whisper to normal 1.0x volume
+  // 50% - 100% = hardware amplification (boost) up to 3.5x louder via Web Audio GainNode!
+  const applyHardwareVolume = useCallback(
+    (id: string, trackVol: number, masterVol: number, muted: boolean) => {
+      const audio = audioRefs.current[id];
+      if (!audio) return;
+
+      const eff = muted ? 0 : (trackVol * masterVol) / 100;
+
+      if (eff <= 0) {
+        audio.muted = true;
+        audio.volume = 0;
+        const g = gainNodesRef.current[id];
+        if (g && audioCtxRef.current) {
+          g.gain.setValueAtTime(0, audioCtxRef.current.currentTime);
+        }
+        return;
+      }
+
+      audio.muted = false;
+      const g = gainNodesRef.current[id];
+      const baseCalibration = TRACK_BASE_GAIN[id] ?? 1.0;
+
+      if (eff <= 50) {
+        // 0..50 maps to 0.0..1.0 with steep perceptual taper so 5% is truly whisper-quiet
+        const ratio = eff / 50;
+        const elemVol = Math.min(1, Math.max(0, Math.pow(ratio, 1.7)));
+        const nodeGain = Math.max(0, Math.pow(ratio, 1.1) * baseCalibration);
+        audio.volume = elemVol;
+        if (g && audioCtxRef.current) {
+          g.gain.setValueAtTime(nodeGain, audioCtxRef.current.currentTime);
+        }
+      } else {
+        // 50..100 boosts gain from 1.0x up to 3.5x (multiplied by baseCalibration) so user can make any track much louder!
+        const boostRatio = (eff - 50) / 50;
+        audio.volume = 1.0;
+        if (g && audioCtxRef.current) {
+          const boostedGain = (1.0 + Math.pow(boostRatio, 1.25) * 2.5) * baseCalibration;
+          g.gain.setValueAtTime(boostedGain, audioCtxRef.current.currentTime);
+        }
+      }
     },
     []
   );
 
-  // Get or lazily create the ad-free HTML5 Audio instance for a track (with ?v=2 cache buster for normalized audio)
+  // Get or lazily create the HTML5 Audio instance + Web Audio GainNode for a track
   const getOrCreateAudio = useCallback((id: string): HTMLAudioElement => {
     let audio = audioRefs.current[id];
     if (!audio) {
-      audio = new Audio(`./audio/${id}.mp3?v=2`);
+      audio = new Audio(`./audio/${id}.mp3?v=3`);
       audio.loop = true;
       audio.preload = 'auto';
       audioRefs.current[id] = audio;
+
+      try {
+        const AudioContextClass =
+          window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AudioContextClass) {
+          if (!audioCtxRef.current) {
+            audioCtxRef.current = new AudioContextClass();
+          }
+          const ctx = audioCtxRef.current;
+          const source = ctx.createMediaElementSource(audio);
+          const gainNode = ctx.createGain();
+          source.connect(gainNode);
+          gainNode.connect(ctx.destination);
+          gainNodesRef.current[id] = gainNode;
+        }
+      } catch {
+        // Fallback to standard HTMLAudioElement.volume if Web Audio graph fails
+      }
     }
+
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume().catch(() => {});
+    }
+
     return audio;
   }, []);
 
   // Compute effective percentage for UI display
-  const getEffectiveVolume = useCallback((trackId: string, customTrackVol?: number, customMasterVol?: number): number => {
-    if (isMasterMuted) return 0;
-    const tVol = customTrackVol !== undefined ? customTrackVol : (volumes[trackId] ?? 60);
-    const mVol = customMasterVol !== undefined ? customMasterVol : masterVolume;
-    return Math.round((tVol * mVol) / 100);
-  }, [isMasterMuted, volumes, masterVolume]);
+  const getEffectiveVolume = useCallback(
+    (trackId: string, customTrackVol?: number, customMasterVol?: number): number => {
+      if (isMasterMuted) return 0;
+      const tVol = customTrackVol !== undefined ? customTrackVol : (volumes[trackId] ?? 50);
+      const mVol = customMasterVol !== undefined ? customMasterVol : masterVolume;
+      return Math.round((tVol * mVol) / 100);
+    },
+    [isMasterMuted, volumes, masterVolume]
+  );
 
-  // Guarantee all playing HTMLAudioElements stay in sync with volume states
+  // Guarantee all playing HTMLAudioElements and GainNodes stay in sync with volume states
   useEffect(() => {
     SOUND_TRACKS.forEach((track) => {
-      const audio = audioRefs.current[track.id];
-      if (audio) {
+      if (audioRefs.current[track.id]) {
         const tVol = volumes[track.id] ?? track.defaultVolume;
-        audio.volume = computeAudioGain(tVol, masterVolume, isMasterMuted);
+        applyHardwareVolume(track.id, tVol, masterVolume, isMasterMuted);
       }
     });
-  }, [volumes, masterVolume, isMasterMuted, computeAudioGain]);
+  }, [volumes, masterVolume, isMasterMuted, applyHardwareVolume]);
 
   // Helper to format seconds as M:SS
   const formatSeconds = (totalSeconds: number): string => {
@@ -436,10 +512,10 @@ export const SoundsSection: React.FC = () => {
   // Jump to specific timestamp in track
   const handleSeek = (id: string, seconds: number) => {
     setTrackPositions((prev) => ({ ...prev, [id]: seconds }));
-    const tVol = volumes[id] ?? 60;
+    const tVol = volumes[id] ?? 50;
 
     const audio = getOrCreateAudio(id);
-    audio.volume = computeAudioGain(tVol, masterVolume, isMasterMuted);
+    applyHardwareVolume(id, tVol, masterVolume, isMasterMuted);
     if (audio.duration && Number.isFinite(audio.duration)) {
       audio.currentTime = seconds % audio.duration;
     }
@@ -470,9 +546,15 @@ export const SoundsSection: React.FC = () => {
   // Toggle single sound track (does NOT stop other sounds - enables combining!)
   const handleToggleTrack = (id: string) => {
     const willPlay = !activeTracks[id];
-    const tVol = volumes[id] ?? 60;
+    let tVol = volumes[id] ?? 50;
+    // If track was muted at 0% and user clicks Play, restore it to 50% so it can be heard
+    if (willPlay && tVol === 0) {
+      tVol = prevVolumesRef.current[id] || 50;
+      setVolumes((prev) => ({ ...prev, [id]: tVol }));
+    }
+
     const audio = getOrCreateAudio(id);
-    audio.volume = computeAudioGain(tVol, masterVolume, isMasterMuted);
+    applyHardwareVolume(id, tVol, masterVolume, isMasterMuted);
 
     if (willPlay) {
       audio.play().catch(() => {});
@@ -484,28 +566,52 @@ export const SoundsSection: React.FC = () => {
   };
 
   // Adjust volume for an individual track in real-time
-  const handleVolumeChange = (id: string, newTrackVol: number) => {
+  const handleVolumeChange = (id: string, rawVol: number) => {
+    const newTrackVol = Math.min(100, Math.max(0, Math.round(rawVol)));
+    if (newTrackVol > 0) {
+      prevVolumesRef.current[id] = newTrackVol;
+    }
     setVolumes((prev) => ({ ...prev, [id]: newTrackVol }));
 
-    const audio = audioRefs.current[id];
-    if (audio) {
-      audio.volume = computeAudioGain(newTrackVol, masterVolume, isMasterMuted);
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume().catch(() => {});
+    }
+    applyHardwareVolume(id, newTrackVol, masterVolume, isMasterMuted);
+  };
+
+  // Toggle mute/unmute for a single track via its speaker button
+  const handleToggleTrackMute = (id: string) => {
+    const currentVol = volumes[id] ?? 50;
+    if (currentVol > 0) {
+      prevVolumesRef.current[id] = currentVol;
+      handleVolumeChange(id, 0);
+    } else {
+      const restored = prevVolumesRef.current[id] || 50;
+      handleVolumeChange(id, restored);
     }
   };
 
+  // Step track volume down or up by delta (e.g. -15% or +15%)
+  const handleStepTrackVolume = (id: string, delta: number) => {
+    const currentVol = volumes[id] ?? 50;
+    handleVolumeChange(id, currentVol + delta);
+  };
+
   // Adjust master volume and instantly scale all currently playing tracks
-  const handleMasterVolumeChange = (newMaster: number) => {
+  const handleMasterVolumeChange = (rawMaster: number) => {
+    const newMaster = Math.min(100, Math.max(0, Math.round(rawMaster)));
     setMasterVolume(newMaster);
-    if (isMasterMuted) {
+    if (isMasterMuted && newMaster > 0) {
       setIsMasterMuted(false);
     }
 
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume().catch(() => {});
+    }
+
     SOUND_TRACKS.forEach((track) => {
-      const audio = audioRefs.current[track.id];
-      if (audio) {
-        const tVol = volumes[track.id] ?? track.defaultVolume;
-        audio.volume = computeAudioGain(tVol, newMaster, false);
-      }
+      const tVol = volumes[track.id] ?? track.defaultVolume;
+      applyHardwareVolume(track.id, tVol, newMaster, newMaster === 0);
     });
   };
 
@@ -515,11 +621,8 @@ export const SoundsSection: React.FC = () => {
     setIsMasterMuted(nextMuted);
 
     SOUND_TRACKS.forEach((track) => {
-      const audio = audioRefs.current[track.id];
-      if (audio) {
-        const tVol = volumes[track.id] ?? track.defaultVolume;
-        audio.volume = computeAudioGain(tVol, masterVolume, nextMuted);
-      }
+      const tVol = volumes[track.id] ?? track.defaultVolume;
+      applyHardwareVolume(track.id, tVol, masterVolume, nextMuted);
     });
   };
 
@@ -558,10 +661,10 @@ export const SoundsSection: React.FC = () => {
     setVolumes(newVolumes);
     setActiveTracks(newActive);
 
-    // 3. Start audio with perceptual volume curve
+    // 3. Start audio with hardware gain
     Object.entries(preset.tracks).forEach(([id, vol]) => {
       const audio = getOrCreateAudio(id);
-      audio.volume = computeAudioGain(vol, masterVolume, isMasterMuted);
+      applyHardwareVolume(id, vol, masterVolume, isMasterMuted);
       audio.play().catch(() => {});
     });
   };
@@ -584,7 +687,7 @@ export const SoundsSection: React.FC = () => {
           </h2>
 
           <p className="text-sm sm:text-base text-[#616D7E] leading-relaxed">
-            Můžeš si pustit kterýkoliv zvuk samostatně, nebo libovolně <strong>nakombinovat více stop najednou</strong> (např. déšť + praskání ohně + kočičí předení) a každé nastavit přesnou hlasitost.
+            Můžeš si pustit kterýkoliv zvuk samostatně, nebo libovolně <strong>nakombinovat více stop najednou</strong> (např. déšť + praskání ohně + kočičí předení) a každé nastavit přesnou hlasitost od ticha (0 %) až po silné zesílení (100 %).
           </p>
         </div>
 
@@ -598,7 +701,7 @@ export const SoundsSection: React.FC = () => {
             <span className="text-xs text-[#7B8798]">Kliknutím spustíš celý mix</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {PRESET_MIXES.map((preset) => (
               <button
                 key={preset.name}
@@ -646,40 +749,68 @@ export const SoundsSection: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-xs text-[#6A5A82]">
-                    Zvuky hrají společně v reálném čase. Posouváním faderů nastav poměr jednotlivých stop.
+                    Zvuky hrají společně v reálném čase. Tlačítky <strong>− / +</strong> nebo posuvníkem okamžitě ztišíš či zesílíš každou stopu.
                   </p>
                 </div>
               </div>
 
               {/* Master Volume Controls */}
-              <div className="w-full md:w-auto flex items-center gap-3 bg-white/70 backdrop-blur-xs px-4 py-2.5 rounded-2xl border border-[#D8C7EB]">
+              <div className="w-full md:w-auto flex flex-wrap items-center gap-2.5 bg-white/80 backdrop-blur-xs px-4 py-2.5 rounded-2xl border border-[#D8C7EB]">
                 <button
                   type="button"
                   onClick={handleToggleMasterMute}
-                  className="p-1.5 rounded-lg text-[#5B3E7A] hover:bg-[#EAE1F5] transition-colors cursor-pointer"
-                  title={isMasterMuted ? 'Zrušit ztlumení' : 'Ztlumit veškerý zvuk'}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
+                    isMasterMuted || masterVolume === 0
+                      ? 'bg-[#FCECEE] border-[#E9BDC4] text-[#862E44]'
+                      : 'bg-[#FAF6FC] border-[#DACCEE] text-[#43305D] hover:bg-[#EFE8F7]'
+                  }`}
+                  title={isMasterMuted ? 'Zapnout zvuk' : 'Ztlumit vše'}
                 >
-                  {isMasterMuted ? <VolumeX className="w-4 h-4 text-[#A84860]" /> : <Volume2 className="w-4 h-4" />}
+                  {isMasterMuted || masterVolume === 0 ? (
+                    <>
+                      <VolumeX className="w-4 h-4 text-[#A84860]" />
+                      <span>Ztlumeno</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="w-4 h-4" />
+                      <span>Celková:</span>
+                    </>
+                  )}
                 </button>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-[#5D4E73] font-medium whitespace-nowrap">
-                    Celková hlasitost:
-                  </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleMasterVolumeChange((isMasterMuted ? 0 : masterVolume) - 15)}
+                    className="p-1.5 rounded-lg bg-white border border-[#DACCEE] text-[#43305D] hover:bg-[#FAF6FC] cursor-pointer"
+                    title="Ztišit celkovou hlasitost"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={isMasterMuted ? 0 : masterVolume}
+                    onInput={(e) => handleMasterVolumeChange(Number((e.target as HTMLInputElement).value))}
                     onChange={(e) => handleMasterVolumeChange(Number(e.target.value))}
-                    className="w-24 sm:w-32 h-1.5 bg-black/15 rounded-lg appearance-none cursor-pointer accent-[#583E7A]"
+                    className="w-24 sm:w-28 h-2 bg-black/15 rounded-lg appearance-none cursor-pointer accent-[#583E7A]"
                   />
-                  <span className="text-xs tabular-nums font-semibold text-[#4F366D] w-8 text-right">
+                  <button
+                    type="button"
+                    onClick={() => handleMasterVolumeChange((isMasterMuted ? 0 : masterVolume) + 15)}
+                    className="p-1.5 rounded-lg bg-white border border-[#DACCEE] text-[#43305D] hover:bg-[#FAF6FC] cursor-pointer"
+                    title="Zesílit celkovou hlasitost"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-xs tabular-nums font-bold text-[#4F366D] w-9 text-right">
                     {isMasterMuted ? '0%' : `${masterVolume}%`}
                   </span>
                 </div>
 
-                <div className="h-4 w-px bg-black/10 mx-1" />
+                <div className="h-4 w-px bg-black/10 mx-0.5" />
 
                 <button
                   type="button"
@@ -693,54 +824,100 @@ export const SoundsSection: React.FC = () => {
             </div>
 
             {/* Active Channels Quick Slider Strip */}
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
               {SOUND_TRACKS.filter((t) => activeTracks[t.id]).map((track) => {
                 const Icon = track.icon;
-                const vol = volumes[track.id] ?? 60;
+                const vol = volumes[track.id] ?? 50;
                 const effective = getEffectiveVolume(track.id);
+                const isTrackMuted = vol === 0 || isMasterMuted;
 
                 return (
                   <div
                     key={`active-strip-${track.id}`}
-                    className="p-3 rounded-2xl bg-white/85 border border-[#DACCEE] flex items-center justify-between gap-3 shadow-2xs"
+                    className="p-3.5 rounded-2xl bg-white/90 border border-[#DACCEE] flex flex-col gap-2.5 shadow-2xs"
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className={`p-1.5 rounded-lg bg-[#FAF7FC] ${track.accentText}`}>
-                        <Icon className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="truncate">
-                        <div className="text-xs font-semibold text-[#302146] truncate">{track.name}</div>
-                        <div className="text-[10px] text-[#7E8D9F] tabular-nums">
-                          {vol}% (výstup {effective}%)
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className={`p-1.5 rounded-lg bg-[#FAF7FC] ${track.accentText}`}>
+                          <Icon className="w-4 h-4" />
                         </div>
+                        <div className="truncate">
+                          <div className="text-xs font-semibold text-[#302146] truncate">{track.name}</div>
+                          <div className="text-[10px] text-[#7E8D9F] tabular-nums">
+                            Hlasitost: <strong>{vol}%</strong> (výstup {effective}%)
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleSeekForward(track.id, 15)}
+                          className="px-2 py-1 rounded-lg text-[#554271] hover:bg-[#F0EAF7] border border-black/5 transition-colors cursor-pointer text-[10px] font-semibold flex items-center gap-0.5"
+                          title="Posunout záznam o +15 sekund dopředu"
+                        >
+                          <FastForward className="w-3 h-3 text-[#79629E]" />
+                          <span>+15s</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleTrack(track.id)}
+                          className="px-2 py-1 rounded-lg text-[#883C52] bg-[#FCECEE] hover:bg-[#F9DEE2] border border-[#E9BDC4] transition-colors cursor-pointer text-[10px] font-semibold flex items-center gap-1"
+                          title="Vypnout tuto stopu"
+                        >
+                          <Square className="w-2.5 h-2.5 fill-current" />
+                          <span>Vypnout</span>
+                        </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    {/* Interactive Volume Bar in Active Strip */}
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => handleSeekForward(track.id, 15)}
-                        className="px-1.5 py-1 rounded-lg text-[#554271] hover:bg-[#F0EAF7] border border-black/5 transition-colors cursor-pointer text-[10px] font-semibold flex items-center gap-0.5"
-                        title="Posunout záznam o +15 sekund dopředu"
+                        onClick={() => handleToggleTrackMute(track.id)}
+                        className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                          isTrackMuted
+                            ? 'bg-[#FCECEE] border-[#E9BDC4] text-[#A84860]'
+                            : 'bg-[#FAF6FC] border-[#DACCEE] text-[#43305D] hover:bg-[#EFE8F7]'
+                        }`}
+                        title={isTrackMuted ? 'Zapnout zvuk stopy' : 'Ztlumit tuto stopu (0 %)'}
                       >
-                        <FastForward className="w-3 h-3 text-[#79629E]" />
-                        <span>+15s</span>
+                        {isTrackMuted ? (
+                          <VolumeX className="w-3.5 h-3.5" />
+                        ) : vol < 40 ? (
+                          <Volume1 className="w-3.5 h-3.5" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5" />
+                        )}
                       </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleStepTrackVolume(track.id, -15)}
+                        className="px-2 py-1 rounded-lg bg-white border border-[#DACCEE] text-[#43305D] hover:bg-[#FAF6FC] text-xs font-bold cursor-pointer"
+                        title="Ztišit o 15 %"
+                      >
+                        −
+                      </button>
+
                       <input
                         type="range"
                         min="0"
                         max="100"
                         value={vol}
+                        onInput={(e) => handleVolumeChange(track.id, Number((e.target as HTMLInputElement).value))}
                         onChange={(e) => handleVolumeChange(track.id, Number(e.target.value))}
-                        className="w-20 h-1.5 bg-black/15 rounded-lg appearance-none cursor-pointer accent-[#624587]"
+                        className="flex-1 h-2 bg-black/15 rounded-lg appearance-none cursor-pointer accent-[#583E7A]"
                       />
+
                       <button
                         type="button"
-                        onClick={() => handleToggleTrack(track.id)}
-                        className="p-1 rounded-lg text-[#883C52] hover:bg-[#FBECEF] transition-colors cursor-pointer"
-                        title="Vypnout tuto stopu"
+                        onClick={() => handleStepTrackVolume(track.id, 15)}
+                        className="px-2 py-1 rounded-lg bg-white border border-[#DACCEE] text-[#43305D] hover:bg-[#FAF6FC] text-xs font-bold cursor-pointer"
+                        title="Zesílit o 15 %"
                       >
-                        <Square className="w-3 h-3 fill-current" />
+                        +
                       </button>
                     </div>
                   </div>
@@ -763,7 +940,7 @@ export const SoundsSection: React.FC = () => {
                   Všechny zvukové stopy
                 </h3>
                 <p className="text-xs text-[#727D8F] mt-0.5">
-                  Klikni na tlačítko <strong>„Přidat do mixu“</strong> u libovolného počtu zvuků níže.
+                  Klikni na <strong>„Přidat do mixu“</strong> a pomocí tlačítek <strong>Ztlumit / − / +</strong> nebo posuvníku nastav hlasitost.
                 </p>
               </div>
             </div>
@@ -780,12 +957,13 @@ export const SoundsSection: React.FC = () => {
             )}
           </div>
 
-          {/* 7 Sound Cards Grid */}
+          {/* Sound Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {SOUND_TRACKS.map((track) => {
               const isPlaying = activeTracks[track.id];
               const vol = volumes[track.id] ?? track.defaultVolume;
               const effectiveVol = getEffectiveVolume(track.id);
+              const isTrackMuted = vol === 0 || isMasterMuted;
               const Icon = track.icon;
 
               return (
@@ -916,26 +1094,96 @@ export const SoundsSection: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Volume Slider for this specific track */}
-                  <div className="pt-3 border-t border-black/5">
-                    <div className="flex items-center justify-between text-xs text-[#606D7E] mb-1.5">
-                      <span className="flex items-center gap-1.5">
-                        <Volume2 className="w-3.5 h-3.5 text-[#7B8899]" />
-                        <span>Hlasitost stopy</span>
-                      </span>
-                      <span className="tabular-nums font-semibold text-[#48375F]">
-                        {vol}% {isPlaying && <span className="text-[10px] text-[#7A889A] font-normal">({effectiveVol}%)</span>}
+                  {/* Interactive Volume Controls for this specific track */}
+                  <div className="pt-3 border-t border-black/5 space-y-2">
+                    <div className="flex items-center justify-between text-xs text-[#606D7E]">
+                      {/* Clickable Mute / Unmute Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleTrackMute(track.id)}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                          isTrackMuted
+                            ? 'bg-[#FCECEE] border-[#E9BDC4] text-[#A84860]'
+                            : 'bg-white/90 border-[#DACCEE] text-[#43305D] hover:bg-white'
+                        }`}
+                        title={isTrackMuted ? 'Kliknutím zapneš zvuk stopy' : 'Kliknutím ztlumíš tuto stopu'}
+                      >
+                        {isTrackMuted ? (
+                          <>
+                            <VolumeX className="w-3.5 h-3.5 text-[#A84860]" />
+                            <span>Ztlumeno (zapnout)</span>
+                          </>
+                        ) : vol < 40 ? (
+                          <>
+                            <Volume1 className="w-3.5 h-3.5 text-[#543878]" />
+                            <span>Ztlumit zvuk</span>
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 className="w-3.5 h-3.5 text-[#543878]" />
+                            <span>Ztlumit zvuk</span>
+                          </>
+                        )}
+                      </button>
+
+                      <span className="tabular-nums font-bold text-[#48375F]">
+                        {vol}% {isPlaying && <span className="text-[10px] text-[#7A889A] font-normal">(výstup {effectiveVol}%)</span>}
                       </span>
                     </div>
 
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={vol}
-                      onChange={(e) => handleVolumeChange(track.id, Number(e.target.value))}
-                      className="w-full h-1.5 bg-black/10 rounded-lg appearance-none cursor-pointer accent-[#583E7A]"
-                    />
+                    {/* Slider with - and + step buttons */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleStepTrackVolume(track.id, -15)}
+                        className="p-1.5 rounded-lg bg-white/90 hover:bg-white border border-[#DACCEE] text-[#43305D] transition-colors cursor-pointer shrink-0"
+                        title="Ztišit o 15 %"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={vol}
+                        onInput={(e) => handleVolumeChange(track.id, Number((e.target as HTMLInputElement).value))}
+                        onChange={(e) => handleVolumeChange(track.id, Number(e.target.value))}
+                        className="w-full h-2 bg-black/15 rounded-lg appearance-none cursor-pointer accent-[#583E7A]"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => handleStepTrackVolume(track.id, 15)}
+                        className="p-1.5 rounded-lg bg-white/90 hover:bg-white border border-[#DACCEE] text-[#43305D] transition-colors cursor-pointer shrink-0"
+                        title="Zesílit o 15 %"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* Quick 1-click volume presets */}
+                    <div className="grid grid-cols-4 gap-1 pt-0.5">
+                      {[
+                        { label: 'Ticho 0%', val: 0 },
+                        { label: 'Potichu', val: 15 },
+                        { label: 'Středně', val: 50 },
+                        { label: 'Nahlas', val: 100 },
+                      ].map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => handleVolumeChange(track.id, preset.val)}
+                          className={`py-1 px-1.5 rounded-lg text-[10px] font-semibold border transition-all cursor-pointer ${
+                            vol === preset.val
+                              ? 'bg-[#4B3469] text-white border-transparent'
+                              : 'bg-white/75 border-[#DDD5EB] text-[#4A3B63] hover:bg-white'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               );
